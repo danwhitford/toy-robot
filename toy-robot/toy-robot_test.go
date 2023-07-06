@@ -174,25 +174,29 @@ func TestReportInstruction(t *testing.T) {
 		instruction string
 		x, y        int
 		f           Direction
+		place bool 
 		report      string
 	}{
-		{"REPORT", 0, 0, NORTH, "0,0,NORTH\n"},
-		{"REPORT", 0, 0, EAST, "0,0,EAST\n"},
-		{"REPORT", 0, 0, SOUTH, "0,0,SOUTH\n"},
-		{"REPORT", 0, 0, WEST, "0,0,WEST\n"},
+		{"REPORT", 0, 0, NORTH, true, "0,0,NORTH\n"},
+		{"REPORT", 0, 0, EAST, true, "0,0,EAST\n"},
+		{"REPORT", 0, 0, SOUTH, true, "0,0,SOUTH\n"},
+		{"REPORT", 0, 0, WEST, true, "0,0,WEST\n"},
+		{"REPORT", 0, 0, NORTH, false, "Robot not placed\n"},
 	}
 
 	for _, tst := range table {
 		var buffer bytes.Buffer
 		robot := NewRobot()
 		robot.Output = &buffer
-		robot.place(tst.x, tst.y, tst.f)
+		if tst.place {
+			robot.place(tst.x, tst.y, tst.f)
+			if !robot.Placed {
+				t.Error("Robot should be placed")
+			}
+		}
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
-		}
-		if !robot.Placed {
-			t.Error("Robot should be placed")
 		}
 		reported := buffer.String()
 		if reported != tst.report {

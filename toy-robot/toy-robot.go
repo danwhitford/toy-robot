@@ -120,6 +120,7 @@ func (r *Robot) right() error {
 // Implement REPORT
 func (r *Robot) report() error {
 	if !r.Placed {
+		fmt.Fprintln(r.Output, "Robot not placed")
 		return nil
 	}
 	fmt.Fprintf(r.Output, "%d,%d,%s\n", r.X, r.Y, r.F)
