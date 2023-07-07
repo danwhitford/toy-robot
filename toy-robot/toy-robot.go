@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 )
 
 //go:generate stringer -type=Direction
@@ -27,16 +26,19 @@ const (
 	REPORT
 )
 
+// This is a robot
 type Robot struct {
-	X, Y   int
-	F      Direction
-	Placed bool
-	Output io.Writer
+	X, Y           int
+	F              Direction
+	Placed         bool
+	Output         io.Writer
+	RobotTokeniser *Tokeniser
 }
 
 func NewRobot() *Robot {
 	return &Robot{
-		Output: os.Stdout,
+		Output:         os.Stdout,
+		RobotTokeniser: &Tokeniser{},
 	}
 }
 
@@ -130,6 +132,7 @@ func (r *Robot) report() error {
 func (r *Robot) runInstructions(instructions []byte) error {
 	idx := 0
 	for idx < len(instructions) {
+		fmt.Printf("idx %d, instruction %v of %d\n", idx, instructions[idx], len(instructions))
 		switch instructions[idx] {
 		case byte(PLACE):
 			idx++
@@ -138,19 +141,35 @@ func (r *Robot) runInstructions(instructions []byte) error {
 			y := int(instructions[idx])
 			idx++
 			f := Direction(instructions[idx])
-			return r.place(x, y, f)
+			idx++
+			err := r.place(x, y, f)
+			if err != nil {
+				return err
+			}
 		case byte(MOVE):
 			idx++
-			return r.move()
+			err := r.move()
+			if err != nil {
+				return err
+			}
 		case byte(LEFT):
 			idx++
-			return r.left()
+			err := r.left()
+			if err != nil {
+				return err
+			}
 		case byte(RIGHT):
 			idx++
-			return r.right()
+			err := r.right()
+			if err != nil {
+				return err
+			}
 		case byte(REPORT):
 			idx++
-			return r.report()
+			err := r.report()
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("invalid instruction %v", instructions[idx])
 		}
@@ -158,51 +177,66 @@ func (r *Robot) runInstructions(instructions []byte) error {
 	return nil
 }
 
-func compileLine(instruction string) ([]byte, error) {
-	switch {
-	case strings.HasPrefix(instruction, "PLACE"):
-		var x, y int
-		var face string
-		_, err := fmt.Sscanf(instruction, "PLACE %d,%d,%s", &x, &y, &face)
-		if err != nil {
-			return nil, err
+func compileLine(tokens []Token) ([]byte, error) {
+	instructions := make([]byte, 0)
+	idx := 0
+	size := len(tokens)
+	for idx < size {
+		switch tokens[idx].Type {
+		case TOKEN_PLACE:
+			idx++
+			if idx+3 >= size {
+				return nil, fmt.Errorf("invalid PLACE instruction")
+			}
+			x, ok := tokens[idx].Value.(int)
+			if !ok {
+				return nil, fmt.Errorf("invalid x coordinate %+v", tokens[idx])
+			}
+			idx++
+			if tokens[idx].Type != TOKEN_COMMA {
+				return nil, fmt.Errorf("invalid PLACE instruction")
+			}
+			idx++
+			y, ok := tokens[idx].Value.(int)
+			if !ok {
+				return nil, fmt.Errorf("invalid y coordinate %+v", tokens[idx])
+			}
+			idx++
+			if tokens[idx].Type != TOKEN_COMMA {
+				return nil, fmt.Errorf("invalid PLACE instruction")
+			}
+			idx++
+			face, ok := tokens[idx].Value.(Direction)
+			if !ok {
+				return nil, fmt.Errorf("invalid facing %+v", tokens[idx])
+			}
+			instructions = append(instructions, byte(PLACE), byte(x), byte(y), byte(face))
+		case TOKEN_MOVE:
+			instructions = append(instructions, byte(MOVE))
+		case TOKEN_LEFT:
+			instructions = append(instructions, byte(LEFT))
+		case TOKEN_RIGHT:
+			instructions = append(instructions, byte(RIGHT))
+		case TOKEN_REPORT:
+			instructions = append(instructions, byte(REPORT))
+		default:
+			return nil, fmt.Errorf("invalid instruction %v", tokens[idx])
 		}
-		f, err := stringToFacing(face)
-		if err != nil {
-			return nil, err
-		}
-		return []byte{byte(PLACE), byte(x), byte(y), byte(f)}, nil
-	case instruction == "MOVE":
-		return []byte{byte(MOVE)}, nil
-	case instruction == "LEFT":
-		return []byte{byte(LEFT)}, nil
-	case instruction == "RIGHT":
-		return []byte{byte(RIGHT)}, nil
-	case instruction == "REPORT":
-		return []byte{byte(REPORT)}, nil
-	default:
-		return nil, fmt.Errorf("invalid instruction %s", instruction)
+
+		idx++
 	}
+
+	return instructions, nil
 }
 
 func (r *Robot) ReadInstruction(instruction string) error {
-	instructions, err := compileLine(instruction)
+	tokens, err := r.RobotTokeniser.Tokenise(instruction)
+	if err != nil {
+		return err
+	}
+	instructions, err := compileLine(tokens)
 	if err != nil {
 		return err
 	}
 	return r.runInstructions(instructions)
-}
-
-func stringToFacing(face string) (Direction, error) {
-	switch face {
-	case "NORTH":
-		return NORTH, nil
-	case "EAST":
-		return EAST, nil
-	case "SOUTH":
-		return SOUTH, nil
-	case "WEST":
-		return WEST, nil
-	}
-	return 0, fmt.Errorf("invalid facing %s", face)
 }

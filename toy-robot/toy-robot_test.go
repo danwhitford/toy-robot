@@ -2,6 +2,7 @@ package toyrobot
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 )
 
@@ -174,7 +175,7 @@ func TestReportInstruction(t *testing.T) {
 		instruction string
 		x, y        int
 		f           Direction
-		place bool 
+		place       bool
 		report      string
 	}{
 		{"REPORT", 0, 0, NORTH, true, "0,0,NORTH\n"},
@@ -203,4 +204,35 @@ func TestReportInstruction(t *testing.T) {
 			t.Errorf("Robot report should be %s but was %s", tst.report, reported)
 		}
 	}
+}
+
+func TestManyInstructionsOnOneLine(t *testing.T) {
+	table := []struct {
+		instruction    string
+		expectedReport string
+	}{
+		{"PLACE 0,0,NORTH MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
+		{"PLACE 1,2,EAST MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
+		{"PLACE 0,0,NORTH LEFT LEFT LEFT LEFT REPORT", "0,0,NORTH\n"},
+		{"PLACE 0,0,NORTH RIGHT RIGHT RIGHT RIGHT REPORT", "0,0,NORTH\n"},
+		{"PLACE 1,2,EAST MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
+		{"PLACE 0,0,NORTH MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
+	}
+
+	for i, tst := range table {
+		var buffer bytes.Buffer
+		robot := NewRobot()
+		robot.Output = &buffer
+		err := robot.ReadInstruction(tst.instruction)
+		if err != nil {
+			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
+		}
+		reported := buffer.String()
+		if reported != tst.expectedReport {
+			tst.expectedReport = strings.Replace(tst.expectedReport, "\n", "\\n", -1)
+			reported = strings.Replace(reported, "\n", "\\n", -1)
+			t.Errorf("Failed %dth test. Robot report should be '%s' but was '%s'", i, tst.expectedReport, reported)
+		}
+	}
+
 }
