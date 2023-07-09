@@ -129,6 +129,7 @@ func (r *Robot) report() error {
 	return nil
 }
 
+// TODO make this better
 func (r *Robot) runInstructions(instructions []byte) error {
 	idx := 0
 	for idx < len(instructions) {
@@ -177,6 +178,7 @@ func (r *Robot) runInstructions(instructions []byte) error {
 	return nil
 }
 
+// TODO refactor this into compiler struct
 func compileLine(tokens []Token) ([]byte, error) {
 	instructions := make([]byte, 0)
 	idx := 0
