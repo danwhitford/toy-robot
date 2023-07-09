@@ -33,12 +33,14 @@ type Robot struct {
 	Placed         bool
 	Output         io.Writer
 	RobotTokeniser *Tokeniser
+	RobotCompiler  *RobotCompiler
 }
 
 func NewRobot() *Robot {
 	return &Robot{
 		Output:         os.Stdout,
 		RobotTokeniser: &Tokeniser{},
+		RobotCompiler:  &RobotCompiler{},
 	}
 }
 
@@ -178,65 +180,12 @@ func (r *Robot) runInstructions(instructions []byte) error {
 	return nil
 }
 
-// TODO refactor this into compiler struct
-func compileLine(tokens []Token) ([]byte, error) {
-	instructions := make([]byte, 0)
-	idx := 0
-	size := len(tokens)
-	for idx < size {
-		switch tokens[idx].Type {
-		case TOKEN_PLACE:
-			idx++
-			if idx+3 >= size {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			x, ok := tokens[idx].Value.(int)
-			if !ok {
-				return nil, fmt.Errorf("invalid x coordinate %+v", tokens[idx])
-			}
-			idx++
-			if tokens[idx].Type != TOKEN_COMMA {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			idx++
-			y, ok := tokens[idx].Value.(int)
-			if !ok {
-				return nil, fmt.Errorf("invalid y coordinate %+v", tokens[idx])
-			}
-			idx++
-			if tokens[idx].Type != TOKEN_COMMA {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			idx++
-			face, ok := tokens[idx].Value.(Direction)
-			if !ok {
-				return nil, fmt.Errorf("invalid facing %+v", tokens[idx])
-			}
-			instructions = append(instructions, byte(PLACE), byte(x), byte(y), byte(face))
-		case TOKEN_MOVE:
-			instructions = append(instructions, byte(MOVE))
-		case TOKEN_LEFT:
-			instructions = append(instructions, byte(LEFT))
-		case TOKEN_RIGHT:
-			instructions = append(instructions, byte(RIGHT))
-		case TOKEN_REPORT:
-			instructions = append(instructions, byte(REPORT))
-		default:
-			return nil, fmt.Errorf("invalid instruction %v", tokens[idx])
-		}
-
-		idx++
-	}
-
-	return instructions, nil
-}
-
 func (r *Robot) ReadInstruction(instruction string) error {
 	tokens, err := r.RobotTokeniser.Tokenise(instruction)
 	if err != nil {
 		return err
 	}
-	instructions, err := compileLine(tokens)
+	instructions, err := r.RobotCompiler.Compile(tokens)
 	if err != nil {
 		return err
 	}
