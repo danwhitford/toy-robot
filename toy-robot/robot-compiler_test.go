@@ -13,32 +13,32 @@ func TestCompile(t *testing.T) {
 	}{
 		{
 			input: []Token{
-				Token{
+				{
 					Type:   TOKEN_PLACE,
 					Value:  nil,
 					Lexeme: "PLACE",
 				},
-				Token{
+				{
 					Type:   TOKEN_NUMBER,
 					Value:  0,
 					Lexeme: "0",
 				},
-				Token{
+				{
 					Type:   TOKEN_COMMA,
 					Value:  nil,
 					Lexeme: ",",
 				},
-				Token{
+				{
 					Type:   TOKEN_NUMBER,
 					Value:  0,
 					Lexeme: "0",
 				},
-				Token{
+				{
 					Type:   TOKEN_COMMA,
 					Value:  nil,
 					Lexeme: ",",
 				},
-				Token{
+				{
 					Type:   TOKEN_DIRECTION,
 					Value:  NORTH,
 					Lexeme: "NORTH",
@@ -50,7 +50,7 @@ func TestCompile(t *testing.T) {
 		},
 		{
 			input: []Token{
-				Token{
+				{
 					Type:   TOKEN_MOVE,
 					Value:  nil,
 					Lexeme: "MOVE",

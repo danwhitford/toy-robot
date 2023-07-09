@@ -8,9 +8,7 @@ import (
 )
 
 type Tokeniser struct {
-	input []rune
-	ptr   int
-	size  int
+	belt *Belt[rune]
 }
 
 type TokenType byte
@@ -37,12 +35,13 @@ type Token struct {
 func (t *Tokeniser) Tokenise(input string) ([]Token, error) {
 	tokens := make([]Token, 0)
 
-	t.input = []rune(input)
-	t.ptr = 0
-	t.size = len(input)
+	t.belt = NewBelt[rune]([]rune(input))
 
-	for t.ptr < t.size {
-		currentRune := t.getPeek()
+	for t.belt.HasNext() {
+		currentRune, err := t.belt.Peek()
+		if err != nil {
+			return []Token{}, err
+		}
 		switch {
 		case unicode.IsLetter(currentRune):
 			token, err := t.getTokenAlpha()
@@ -68,18 +67,11 @@ func (t *Tokeniser) Tokenise(input string) ([]Token, error) {
 	return tokens, nil
 }
 
-func (t *Tokeniser) getNext() rune {
-	r := t.input[t.ptr]
-	t.ptr++
-	return r
-}
-
-func (t *Tokeniser) getPeek() rune {
-	return t.input[t.ptr]
-}
-
 func (t *Tokeniser) getTokenNumber() (Token, error) {
-	curr := t.getNext()
+	curr, err := t.belt.GetNext()
+	if err != nil {
+		return Token{}, err
+	}
 	number, err := strconv.Atoi(string(curr))
 	if err != nil {
 		return Token{}, fmt.Errorf("invalid token, expecting number but got '%s'", string(curr))
@@ -88,7 +80,11 @@ func (t *Tokeniser) getTokenNumber() (Token, error) {
 }
 
 func (t *Tokeniser) getTokenComma() (Token, error) {
-	if t.getNext() == ',' {
+	curr, err := t.belt.GetNext()
+	if err != nil {
+		return Token{}, err
+	}
+	if curr == ',' {
 		return Token{Type: TOKEN_COMMA, Value: nil, Lexeme: ","}, nil
 	}
 
@@ -96,7 +92,10 @@ func (t *Tokeniser) getTokenComma() (Token, error) {
 }
 
 func (t *Tokeniser) getTokenAlpha() (Token, error) {
-	lexeme := t.getLexeme()
+	lexeme, err := t.getLexeme()
+	if err != nil {
+		return Token{}, err
+	}
 	switch strings.ToUpper(lexeme) {
 	case "PLACE":
 		return Token{Type: TOKEN_PLACE, Value: nil, Lexeme: lexeme}, nil
@@ -121,15 +120,19 @@ func (t *Tokeniser) getTokenAlpha() (Token, error) {
 	}
 }
 
-func (t *Tokeniser) getLexeme() string {
+func (t *Tokeniser) getLexeme() (string, error) {
 	lexeme := ""
-	for t.ptr < t.size {
-		currentRune := t.getNext()
+	for t.belt.HasNext() {
+		curr, err := t.belt.GetNext()
+		if err != nil {
+			return "", err
+		}
+		currentRune := curr
 		if unicode.IsLetter(currentRune) {
 			lexeme += string(currentRune)
 		} else {
 			break
 		}
 	}
-	return lexeme
+	return lexeme, nil
 }

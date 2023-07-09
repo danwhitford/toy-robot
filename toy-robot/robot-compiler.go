@@ -3,53 +3,49 @@ package toyrobot
 import "fmt"
 
 type RobotCompiler struct {
-	input []Token
-	ptr   int
-	size  int
+	belt *Belt[Token]
 }
 
 func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
-	r.input = input
-	r.ptr = 0
-	r.size = len(input)
+	r.belt = NewBelt[Token](input)
 
 	instructions := make([]byte, 0)
-	for r.ptr < r.size {
-		token, err := r.getNext()
+	for r.belt.HasNext() {
+		token, err := r.belt.GetNext()
 		if err != nil {
 			return nil, err
 		}
 		switch token.Type {
 		case TOKEN_PLACE:
-			x, err := r.getNext()
+			x, err := r.belt.GetNext()
 			if err != nil {
 				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
 			}
 			if x.Type != TOKEN_NUMBER {
 				return nil, fmt.Errorf("invalid x coordinate %+v", x)
 			}
-			c, err := r.getNext()
+			c, err := r.belt.GetNext()
 			if err != nil {
 				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
 			}
 			if c.Type != TOKEN_COMMA {
 				return nil, fmt.Errorf("invalid PLACE instruction: %v", c)
 			}
-			y, err := r.getNext()
+			y, err := r.belt.GetNext()
 			if err != nil {
 				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
 			}
 			if y.Type != TOKEN_NUMBER {
 				return nil, fmt.Errorf("invalid y coordinate '%+v'", y)
 			}
-			c, err = r.getNext()
+			c, err = r.belt.GetNext()
 			if err != nil {
 				return nil, fmt.Errorf("invalid PLACE instruction")
 			}
 			if c.Type != TOKEN_COMMA {
 				return nil, fmt.Errorf("invalid PLACE instruction")
 			}
-			f, err := r.getNext()
+			f, err := r.belt.GetNext()
 			if err != nil {
 				return nil, fmt.Errorf("invalid PLACE instruction")
 			}
@@ -76,10 +72,4 @@ func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
 	}
 
 	return instructions, nil
-}
-
-func (r *RobotCompiler) getNext() (Token, error) {
-	t := r.input[r.ptr]
-	r.ptr++
-	return t, nil
 }
