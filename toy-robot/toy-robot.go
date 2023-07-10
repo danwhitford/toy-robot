@@ -135,7 +135,6 @@ func (r *Robot) report() error {
 func (r *Robot) runInstructions(instructions []byte) error {
 	idx := 0
 	for idx < len(instructions) {
-		fmt.Printf("idx %d, instruction %v of %d\n", idx, instructions[idx], len(instructions))
 		switch instructions[idx] {
 		case byte(PLACE):
 			idx++

@@ -31,7 +31,6 @@ type Token struct {
 	Lexeme string
 }
 
-// TODO combine instructions into TOKEN_INSTRUCTION
 func (t *Tokeniser) Tokenise(input string) ([]Token, error) {
 	tokens := make([]Token, 0)
 
