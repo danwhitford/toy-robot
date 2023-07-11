@@ -12,14 +12,12 @@ func TestTokenise(t *testing.T) {
 		expected []Token
 	}{
 		{
-			"PLACE 3,2,NORTH",
+			"3 2 NORTH PLACE",
 			[]Token{
-				{Type: TOKEN_PLACE, Value: nil, Lexeme: "PLACE"},
 				{Type: TOKEN_NUMBER, Value: 3, Lexeme: "3"},
-				{Type: TOKEN_COMMA, Value: nil, Lexeme: ","},
 				{Type: TOKEN_NUMBER, Value: 2, Lexeme: "2"},
-				{Type: TOKEN_COMMA, Value: nil, Lexeme: ","},
 				{Type: TOKEN_DIRECTION, Value: NORTH, Lexeme: "NORTH"},
+				{Type: TOKEN_PLACE, Value: nil, Lexeme: "PLACE"},
 			},
 		},
 		{
@@ -55,7 +53,7 @@ func TestTokenise(t *testing.T) {
 	}
 
 	for _, tst := range table {
-		tokeniser := Tokeniser{}
+		tokeniser := RobotTokeniser{}
 		got, err := tokeniser.Tokenise(tst.input)
 		if err != nil {
 			t.Errorf("Error tokenising '%s': '%s'", tst.input, err)

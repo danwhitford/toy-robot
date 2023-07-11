@@ -8,7 +8,7 @@ type Belt[T any] struct {
 	size  int
 }
 
-func NewBelt [T any](input []T) *Belt[T] {
+func NewBelt[T any](input []T) *Belt[T] {
 	return &Belt[T]{
 		input: input,
 		ptr:   0,

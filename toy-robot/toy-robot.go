@@ -16,31 +16,45 @@ const (
 	WEST
 )
 
+//go:generate stringer -type=Instruction
 type Instruction byte
 
 const (
-	PLACE Instruction = iota
-	MOVE
-	LEFT
-	RIGHT
-	REPORT
+	OP_PLACE Instruction = iota
+	OP_MOVE
+	OP_LEFT
+	OP_RIGHT
+	OP_REPORT
+	OP_PUSH_VAL
+	OP_POP_VAL
+)
+
+//go:generate stringer -type=RobotType
+type RobotType byte
+
+const (
+	T_INT RobotType = iota
+	T_DIRECTION
 )
 
 // This is a robot
 type Robot struct {
-	X, Y           int
-	F              Direction
-	Placed         bool
-	Output         io.Writer
-	RobotTokeniser *Tokeniser
-	RobotCompiler  *RobotCompiler
+	X, Y            int
+	F               Direction
+	Placed          bool
+	Output          io.Writer
+	RobotTokeniser  *RobotTokeniser
+	RobotCompiler   *RobotCompiler
+	RobotValueStack *RobotStack[RobotValue]
 }
 
 func NewRobot() *Robot {
+	stack := make(RobotStack[RobotValue], 0)
 	return &Robot{
-		Output:         os.Stdout,
-		RobotTokeniser: &Tokeniser{},
-		RobotCompiler:  &RobotCompiler{},
+		Output:          os.Stdout,
+		RobotTokeniser:  &RobotTokeniser{},
+		RobotCompiler:   &RobotCompiler{},
+		RobotValueStack: &stack,
 	}
 }
 
@@ -136,41 +150,58 @@ func (r *Robot) runInstructions(instructions []byte) error {
 	idx := 0
 	for idx < len(instructions) {
 		switch instructions[idx] {
-		case byte(PLACE):
+		case byte(OP_PLACE):
 			idx++
-			x := int(instructions[idx])
-			idx++
-			y := int(instructions[idx])
-			idx++
-			f := Direction(instructions[idx])
-			idx++
-			err := r.place(x, y, f)
+			dir, err := r.RobotValueStack.Pop()
 			if err != nil {
 				return err
 			}
-		case byte(MOVE):
+			y, err := r.RobotValueStack.Pop()
+			if err != nil {
+				return err
+			}
+			x, err := r.RobotValueStack.Pop()
+			if err != nil {
+				return err
+			}
+			r.place(x.Value.(int), y.Value.(int), dir.Value.(Direction))
+		case byte(OP_MOVE):
 			idx++
 			err := r.move()
 			if err != nil {
 				return err
 			}
-		case byte(LEFT):
+		case byte(OP_LEFT):
 			idx++
 			err := r.left()
 			if err != nil {
 				return err
 			}
-		case byte(RIGHT):
+		case byte(OP_RIGHT):
 			idx++
 			err := r.right()
 			if err != nil {
 				return err
 			}
-		case byte(REPORT):
+		case byte(OP_REPORT):
 			idx++
 			err := r.report()
 			if err != nil {
 				return err
+			}
+		case byte(OP_PUSH_VAL):
+			idx++
+			t := RobotType(instructions[idx])
+			idx++
+			switch t {
+			case T_INT:
+				v := int(instructions[idx])
+				idx++
+				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
+			case T_DIRECTION:
+				v := Direction(instructions[idx])
+				idx++
+				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
 			}
 		default:
 			return fmt.Errorf("invalid instruction %v", instructions[idx])

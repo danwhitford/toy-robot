@@ -17,55 +17,29 @@ func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
 		}
 		switch token.Type {
 		case TOKEN_PLACE:
-			x, err := r.belt.GetNext()
-			if err != nil {
-				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
-			}
-			if x.Type != TOKEN_NUMBER {
-				return nil, fmt.Errorf("invalid x coordinate %+v", x)
-			}
-			c, err := r.belt.GetNext()
-			if err != nil {
-				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
-			}
-			if c.Type != TOKEN_COMMA {
-				return nil, fmt.Errorf("invalid PLACE instruction: %v", c)
-			}
-			y, err := r.belt.GetNext()
-			if err != nil {
-				return nil, fmt.Errorf("invalid PLACE instruction: %v", err)
-			}
-			if y.Type != TOKEN_NUMBER {
-				return nil, fmt.Errorf("invalid y coordinate '%+v'", y)
-			}
-			c, err = r.belt.GetNext()
-			if err != nil {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			if c.Type != TOKEN_COMMA {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			f, err := r.belt.GetNext()
-			if err != nil {
-				return nil, fmt.Errorf("invalid PLACE instruction")
-			}
-			if f.Type != TOKEN_DIRECTION {
-				return nil, fmt.Errorf("invalid direction %+v", f)
-			}
-			instructions = append(instructions, byte(PLACE))
-			instructions = append(instructions, byte(x.Value.(int)))
-			instructions = append(instructions, byte(y.Value.(int)))
-			instructions = append(instructions, byte(f.Value.(Direction)))
+			instructions = append(instructions, byte(OP_PLACE))
 		case TOKEN_MOVE:
-			instructions = append(instructions, byte(MOVE))
+			instructions = append(instructions, byte(OP_MOVE))
 		case TOKEN_LEFT:
-			instructions = append(instructions, byte(LEFT))
+			instructions = append(instructions, byte(OP_LEFT))
 		case TOKEN_RIGHT:
-			instructions = append(instructions, byte(RIGHT))
+			instructions = append(instructions, byte(OP_RIGHT))
 		case TOKEN_REPORT:
-			instructions = append(instructions, byte(REPORT))
+			instructions = append(instructions, byte(OP_REPORT))
 		case TOKEN_NUMBER:
-			instructions = append(instructions, byte(token.Value.(int)))
+			instructions = append(
+				instructions,
+				byte(OP_PUSH_VAL),
+				byte(T_INT),
+				byte(token.Value.(int)),
+			)
+		case TOKEN_DIRECTION:
+			instructions = append(
+				instructions,
+				byte(OP_PUSH_VAL),
+				byte(T_DIRECTION),
+				byte(token.Value.(Direction)),
+			)
 		default:
 			return nil, fmt.Errorf("invalid instruction '%v'", token)
 		}

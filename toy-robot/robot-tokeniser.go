@@ -7,7 +7,7 @@ import (
 	"unicode"
 )
 
-type Tokeniser struct {
+type RobotTokeniser struct {
 	belt *Belt[rune]
 }
 
@@ -31,7 +31,7 @@ type Token struct {
 	Lexeme string
 }
 
-func (t *Tokeniser) Tokenise(input string) ([]Token, error) {
+func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 	tokens := make([]Token, 0)
 
 	t.belt = NewBelt[rune]([]rune(input))
@@ -60,13 +60,17 @@ func (t *Tokeniser) Tokenise(input string) ([]Token, error) {
 				return []Token{}, err
 			}
 			tokens = append(tokens, token)
+		case unicode.IsSpace(currentRune):
+			t.belt.GetNext()
+		default:
+			return []Token{}, fmt.Errorf("invalid token, unexpected '%s'", string(currentRune))
 		}
 	}
 
 	return tokens, nil
 }
 
-func (t *Tokeniser) getTokenNumber() (Token, error) {
+func (t *RobotTokeniser) getTokenNumber() (Token, error) {
 	curr, err := t.belt.GetNext()
 	if err != nil {
 		return Token{}, err
@@ -78,7 +82,7 @@ func (t *Tokeniser) getTokenNumber() (Token, error) {
 	return Token{Type: TOKEN_NUMBER, Value: number, Lexeme: string(curr)}, nil
 }
 
-func (t *Tokeniser) getTokenComma() (Token, error) {
+func (t *RobotTokeniser) getTokenComma() (Token, error) {
 	curr, err := t.belt.GetNext()
 	if err != nil {
 		return Token{}, err
@@ -90,7 +94,7 @@ func (t *Tokeniser) getTokenComma() (Token, error) {
 	return Token{}, fmt.Errorf("invalid token, expecting COMMA")
 }
 
-func (t *Tokeniser) getTokenAlpha() (Token, error) {
+func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
 	lexeme, err := t.getLexeme()
 	if err != nil {
 		return Token{}, err
@@ -119,7 +123,7 @@ func (t *Tokeniser) getTokenAlpha() (Token, error) {
 	}
 }
 
-func (t *Tokeniser) getLexeme() (string, error) {
+func (t *RobotTokeniser) getLexeme() (string, error) {
 	lexeme := ""
 	for t.belt.HasNext() {
 		curr, err := t.belt.GetNext()

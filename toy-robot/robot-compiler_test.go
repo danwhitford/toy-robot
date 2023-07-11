@@ -14,38 +14,37 @@ func TestCompile(t *testing.T) {
 		{
 			input: []Token{
 				{
-					Type:   TOKEN_PLACE,
-					Value:  nil,
-					Lexeme: "PLACE",
-				},
-				{
 					Type:   TOKEN_NUMBER,
 					Value:  0,
 					Lexeme: "0",
 				},
 				{
-					Type:   TOKEN_COMMA,
-					Value:  nil,
-					Lexeme: ",",
-				},
-				{
 					Type:   TOKEN_NUMBER,
 					Value:  0,
 					Lexeme: "0",
-				},
-				{
-					Type:   TOKEN_COMMA,
-					Value:  nil,
-					Lexeme: ",",
 				},
 				{
 					Type:   TOKEN_DIRECTION,
 					Value:  NORTH,
 					Lexeme: "NORTH",
 				},
+				{
+					Type:   TOKEN_PLACE,
+					Value:  nil,
+					Lexeme: "PLACE",
+				},
 			},
 			want: []byte{
-				byte(PLACE), byte(0), byte(0), byte(NORTH),
+				byte(OP_PUSH_VAL),
+				byte(T_INT),
+				byte(0),
+				byte(OP_PUSH_VAL),
+				byte(T_INT),
+				byte(0),
+				byte(OP_PUSH_VAL),
+				byte(T_DIRECTION),
+				byte(NORTH),
+				byte(OP_PLACE),
 			},
 		},
 		{

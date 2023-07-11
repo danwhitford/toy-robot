@@ -67,10 +67,10 @@ func TestReadPlaceInstruction(t *testing.T) {
 		x, y        int
 		f           Direction
 	}{
-		{"PLACE 0,0,NORTH", 0, 0, NORTH},
-		{"PLACE 0,0,EAST", 0, 0, EAST},
-		{"PLACE 1,2,SOUTH", 1, 2, SOUTH},
-		{"PLACE 2,1,WEST", 2, 1, WEST},
+		{"0 0 NORTH PLACE", 0, 0, NORTH},
+		{"0 0 EAST PLACE", 0, 0, EAST},
+		{"1 2 SOUTH PLACE", 1, 2, SOUTH},
+		{"2 1 WEST PLACE", 2, 1, WEST},
 	}
 
 	for _, tst := range table {
@@ -211,12 +211,12 @@ func TestManyInstructionsOnOneLine(t *testing.T) {
 		instruction    string
 		expectedReport string
 	}{
-		{"PLACE 0,0,NORTH MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
-		{"PLACE 1,2,EAST MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
-		{"PLACE 0,0,NORTH LEFT LEFT LEFT LEFT REPORT", "0,0,NORTH\n"},
-		{"PLACE 0,0,NORTH RIGHT RIGHT RIGHT RIGHT REPORT", "0,0,NORTH\n"},
-		{"PLACE 1,2,EAST MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
-		{"PLACE 0,0,NORTH MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
+		{"0 0 NORTH PLACE MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
+		{"1 2 EAST PLACE MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
+		{"0 0 NORTH PLACE LEFT LEFT LEFT LEFT REPORT", "0,0,NORTH\n"},
+		{"0 0 NORTH PLACE RIGHT RIGHT RIGHT RIGHT REPORT", "0,0,NORTH\n"},
+		{"1 2 EAST PLACE MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
+		{"0 0 NORTH PLACE MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
 	}
 
 	for i, tst := range table {
