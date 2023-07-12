@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
 	"github.com/danwhitford/toyrobot/belt"
 )
 
@@ -61,6 +62,13 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 				return []Token{}, err
 			}
 			tokens = append(tokens, token)
+		case currentRune == '#':
+			for currentRune != '\n' && t.belt.HasNext() {
+				currentRune, err = t.belt.GetNext()
+				if err != nil {
+					return []Token{}, err
+				}
+			}
 		case unicode.IsSpace(currentRune):
 			t.belt.GetNext()
 		default:

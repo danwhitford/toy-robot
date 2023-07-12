@@ -2,9 +2,16 @@ package toyrobot
 
 import (
 	"bytes"
+	"embed"
+	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
+
+//go:embed programs/*.bot
+var programs embed.FS
 
 func TestCanPlace(t *testing.T) {
 	table := []struct {
@@ -217,6 +224,7 @@ func TestManyInstructionsOnOneLine(t *testing.T) {
 		{"0 0 NORTH PLACE RIGHT RIGHT RIGHT RIGHT REPORT", "0,0,NORTH\n"},
 		{"1 2 EAST PLACE MOVE MOVE LEFT MOVE REPORT", "3,3,NORTH\n"},
 		{"0 0 NORTH PLACE MOVE LEFT MOVE REPORT", "0,1,WEST\n"},
+		{"0 0 NORTH PLACE MOVE LEFT MOVE\nREPORT # SOME COMPLETE NONSENSE", "0,1,WEST\n"},
 	}
 
 	for i, tst := range table {
@@ -234,5 +242,54 @@ func TestManyInstructionsOnOneLine(t *testing.T) {
 			t.Errorf("Failed %dth test. Robot report should be '%s' but was '%s'", i, tst.expectedReport, reported)
 		}
 	}
+}
 
+func TestWholePrograms(t *testing.T) {
+	testEnts, err := programs.ReadDir("programs")
+	if err != nil {
+		t.Errorf("Error reading test programs: %s", err)
+	}
+
+	var table []struct {
+		program        string
+		expectedOutput string
+	}
+	for _, testEnt := range testEnts {
+		name := fmt.Sprintf("programs/%s", testEnt.Name())
+		fmt.Println(name)
+		contentBytes, err := programs.ReadFile(name)
+		if err != nil {
+			t.Errorf("Error reading test program %s: %s", testEnt.Name(), err)
+		}
+		content := string(contentBytes)
+		parts := strings.Split(content, "### OUTPUT ###\n")
+		program := parts[0]
+		var outputSB strings.Builder
+		for _, line := range strings.Split(parts[1], "\n") {
+			line = strings.TrimPrefix(line, "# ")
+			outputSB.WriteString(line)
+			outputSB.WriteString("\n")
+		}
+		table = append(table, struct {
+			program        string
+			expectedOutput string
+		}{
+			program,
+			outputSB.String(),
+		})
+	}
+
+	for _, tst := range table {
+		var buffer bytes.Buffer
+		robot := NewRobot()
+		robot.Output = &buffer
+		err := robot.ReadInstruction(tst.program)
+		if err != nil {
+			t.Errorf("Error reading program %s: %s", tst.program, err)
+		}
+		got := buffer.String()
+		if diff := cmp.Diff(tst.expectedOutput, got); diff != "" {
+			t.Errorf("Program output mismatch (-want +got):\n%s", diff)
+		}
+	}
 }
