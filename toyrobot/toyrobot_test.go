@@ -247,7 +247,7 @@ func TestManyInstructionsOnOneLine(t *testing.T) {
 func TestWholePrograms(t *testing.T) {
 	testEnts, err := programs.ReadDir("programs")
 	if err != nil {
-		t.Errorf("Error reading test programs: %s", err)
+		t.Fatalf("Error reading test programs: %s", err)
 	}
 
 	var table []struct {
@@ -285,7 +285,7 @@ func TestWholePrograms(t *testing.T) {
 		robot.Output = &buffer
 		err := robot.ReadInstruction(tst.program)
 		if err != nil {
-			t.Errorf("Error reading program %s: %s", tst.program, err)
+			t.Fatalf("Error reading program %s: %s", tst.program, err)
 		}
 		got := buffer.String()
 		if diff := cmp.Diff(tst.expectedOutput, got); diff != "" {

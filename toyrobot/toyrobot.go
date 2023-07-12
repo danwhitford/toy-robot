@@ -18,27 +18,6 @@ const (
 	WEST
 )
 
-//go:generate stringer -type=Instruction
-type Instruction byte
-
-const (
-	OP_PLACE Instruction = iota
-	OP_MOVE
-	OP_LEFT
-	OP_RIGHT
-	OP_REPORT
-	OP_PUSH_VAL
-	OP_POP_VAL
-)
-
-//go:generate stringer -type=RobotType
-type RobotType byte
-
-const (
-	T_INT RobotType = iota
-	T_DIRECTION
-)
-
 // This is a robot
 type Robot struct {
 	X, Y            int
@@ -48,16 +27,55 @@ type Robot struct {
 	RobotTokeniser  *RobotTokeniser
 	RobotCompiler   *RobotCompiler
 	RobotValueStack *stack.RobotStack[RobotValue]
+	Dictionary      map[string]func() error
 }
 
 func NewRobot() *Robot {
 	stack := make(stack.RobotStack[RobotValue], 0)
-	return &Robot{
+
+	dict := make(map[string]func() error)
+
+	r := Robot{
 		Output:          os.Stdout,
 		RobotTokeniser:  &RobotTokeniser{},
 		RobotCompiler:   &RobotCompiler{},
 		RobotValueStack: &stack,
+		Dictionary:      dict,
 	}
+
+	r.LoadEnv()
+	return &r
+}
+
+func (r *Robot) LoadEnv() {
+	r.Dictionary["BOARD"] = r.printBoard
+}
+
+func (r *Robot) printBoard() error {
+	hr := "+---+---+---+---+---+\n"
+	cage := "| %s | %s | %s | %s | %s |\n"
+	for y := 4; y >= 0; y-- {
+		x := make([]interface{}, 5)
+		for i := range x {
+			x[i] = " "
+		}
+		if r.Placed && r.Y == y {
+			switch r.F {
+			case NORTH:
+				x[r.X] = "^"
+			case EAST:
+				x[r.X] = ">"
+			case SOUTH:
+				x[r.X] = "v"
+			case WEST:
+				x[r.X] = "<"
+			}
+		}
+		fmt.Fprint(r.Output, hr)	
+		fmt.Fprintf(r.Output, cage, x...)
+	}
+	fmt.Fprint(r.Output, hr)
+	return nil
 }
 
 func (r *Robot) place(x, y int, f Direction) error {
@@ -205,6 +223,20 @@ func (r *Robot) runInstructions(instructions []byte) error {
 				idx++
 				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
 			}
+		case byte(OP_EXEC_WORD):
+			idx++
+			wordBytes := make([]byte, 0)
+			for instructions[idx] != 0 {
+				wordBytes = append(wordBytes, instructions[idx])
+				idx++
+			}
+			idx++
+			word := string(wordBytes)
+			fn, ok := r.Dictionary[word]
+			if !ok {
+				return fmt.Errorf("unknown word %s", word)
+			}
+			return fn()
 		default:
 			return fmt.Errorf("invalid instruction %v", instructions[idx])
 		}

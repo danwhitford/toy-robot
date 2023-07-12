@@ -5,6 +5,29 @@ import (
 	"github.com/danwhitford/toyrobot/belt"
 )
 
+//go:generate stringer -type=RobotType
+type RobotType byte
+
+const (
+	T_INT RobotType = iota
+	T_DIRECTION
+)
+
+//go:generate stringer -type=Instruction
+type Instruction byte
+
+const (
+	OP_PLACE Instruction = iota
+	OP_MOVE
+	OP_LEFT
+	OP_RIGHT
+	OP_REPORT
+	OP_PUSH_VAL
+	OP_POP_VAL
+	OP_WORD
+	OP_EXEC_WORD
+)
+
 type RobotCompiler struct {
 	belt *belt.Belt[Token]
 }
@@ -42,6 +65,20 @@ func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
 				byte(OP_PUSH_VAL),
 				byte(T_DIRECTION),
 				byte(token.Value.(Direction)),
+			)
+		case TOKEN_WORD:
+			tokenVal, ok := token.Value.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid token value '%v'", token.Value)
+			}
+			bytes := append([]byte(tokenVal), 0)
+			instructions = append(
+				instructions,
+				byte(OP_EXEC_WORD),
+			)
+			instructions = append(
+				instructions,
+				bytes...,
 			)
 		default:
 			return nil, fmt.Errorf("invalid instruction '%v'", token)

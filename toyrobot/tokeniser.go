@@ -25,6 +25,7 @@ const (
 	TOKEN_NUMBER
 	TOKEN_COMMA
 	TOKEN_DIRECTION
+	TOKEN_WORD
 )
 
 type Token struct {
@@ -128,7 +129,7 @@ func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
 	case "WEST":
 		return Token{Type: TOKEN_DIRECTION, Value: WEST, Lexeme: lexeme}, nil
 	default:
-		return Token{}, fmt.Errorf("invalid token, expecting instruction but got %s", lexeme)
+		return Token{Type: TOKEN_WORD, Value: strings.ToUpper(lexeme), Lexeme: lexeme}, nil
 	}
 }
 

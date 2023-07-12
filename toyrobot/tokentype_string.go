@@ -16,11 +16,12 @@ func _() {
 	_ = x[TOKEN_NUMBER-5]
 	_ = x[TOKEN_COMMA-6]
 	_ = x[TOKEN_DIRECTION-7]
+	_ = x[TOKEN_WORD-8]
 }
 
-const _TokenType_name = "TOKEN_PLACETOKEN_MOVETOKEN_LEFTTOKEN_RIGHTTOKEN_REPORTTOKEN_NUMBERTOKEN_COMMATOKEN_DIRECTION"
+const _TokenType_name = "TOKEN_PLACETOKEN_MOVETOKEN_LEFTTOKEN_RIGHTTOKEN_REPORTTOKEN_NUMBERTOKEN_COMMATOKEN_DIRECTIONTOKEN_WORD"
 
-var _TokenType_index = [...]uint8{0, 11, 21, 31, 42, 54, 66, 77, 92}
+var _TokenType_index = [...]uint8{0, 11, 21, 31, 42, 54, 66, 77, 92, 102}
 
 func (i TokenType) String() string {
 	if i >= TokenType(len(_TokenType_index)-1) {

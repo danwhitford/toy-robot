@@ -15,11 +15,13 @@ func _() {
 	_ = x[OP_REPORT-4]
 	_ = x[OP_PUSH_VAL-5]
 	_ = x[OP_POP_VAL-6]
+	_ = x[OP_WORD-7]
+	_ = x[OP_EXEC_WORD-8]
 }
 
-const _Instruction_name = "OP_PLACEOP_MOVEOP_LEFTOP_RIGHTOP_REPORTOP_PUSH_VALOP_POP_VAL"
+const _Instruction_name = "OP_PLACEOP_MOVEOP_LEFTOP_RIGHTOP_REPORTOP_PUSH_VALOP_POP_VALOP_WORDOP_EXEC_WORD"
 
-var _Instruction_index = [...]uint8{0, 8, 15, 22, 30, 39, 50, 60}
+var _Instruction_index = [...]uint8{0, 8, 15, 22, 30, 39, 50, 60, 67, 79}
 
 func (i Instruction) String() string {
 	if i >= Instruction(len(_Instruction_index)-1) {
