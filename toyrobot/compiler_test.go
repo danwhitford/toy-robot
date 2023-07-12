@@ -50,13 +50,13 @@ func TestCompile(t *testing.T) {
 		{
 			input: []Token{
 				{
-					Type:   TOKEN_MOVE,
-					Value:  nil,
+					Type:   TOKEN_WORD,
+					Value:  "MOVE",
 					Lexeme: "MOVE",
 				},
 			},
 			want: []byte{
-				0x01,
+				byte(OP_EXEC_WORD), 'M', 'O', 'V', 'E', 0,
 			},
 		},
 	}

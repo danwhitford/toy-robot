@@ -18,10 +18,6 @@ type TokenType byte
 //go:generate stringer -type=TokenType
 const (
 	TOKEN_PLACE TokenType = iota
-	TOKEN_MOVE
-	TOKEN_LEFT
-	TOKEN_RIGHT
-	TOKEN_REPORT
 	TOKEN_NUMBER
 	TOKEN_COMMA
 	TOKEN_DIRECTION
@@ -112,14 +108,6 @@ func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
 	switch strings.ToUpper(lexeme) {
 	case "PLACE":
 		return Token{Type: TOKEN_PLACE, Value: nil, Lexeme: lexeme}, nil
-	case "MOVE":
-		return Token{Type: TOKEN_MOVE, Value: nil, Lexeme: lexeme}, nil
-	case "LEFT":
-		return Token{Type: TOKEN_LEFT, Value: nil, Lexeme: lexeme}, nil
-	case "RIGHT":
-		return Token{Type: TOKEN_RIGHT, Value: nil, Lexeme: lexeme}, nil
-	case "REPORT":
-		return Token{Type: TOKEN_REPORT, Value: nil, Lexeme: lexeme}, nil
 	case "NORTH":
 		return Token{Type: TOKEN_DIRECTION, Value: NORTH, Lexeme: lexeme}, nil
 	case "EAST":

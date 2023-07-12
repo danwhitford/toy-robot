@@ -23,22 +23,22 @@ func TestTokenise(t *testing.T) {
 		{
 			"RIGHT",
 			[]Token{
-				{Type: TOKEN_RIGHT, Value: nil, Lexeme: "RIGHT"},
+				{Type: TOKEN_WORD, Value: "RIGHT", Lexeme: "RIGHT"},
 			},
 		},
 		{
 			"REPORT",
 			[]Token{
-				{Type: TOKEN_REPORT, Value: nil, Lexeme: "REPORT"},
+				{Type: TOKEN_WORD, Value: "REPORT", Lexeme: "REPORT"},
 			},
 		},
 		{
 			"MOVE LEFT RIGHT REPORT",
 			[]Token{
-				{Type: TOKEN_MOVE, Value: nil, Lexeme: "MOVE"},
-				{Type: TOKEN_LEFT, Value: nil, Lexeme: "LEFT"},
-				{Type: TOKEN_RIGHT, Value: nil, Lexeme: "RIGHT"},
-				{Type: TOKEN_REPORT, Value: nil, Lexeme: "REPORT"},
+				{Type: TOKEN_WORD, Value: "MOVE", Lexeme: "MOVE"},
+				{Type: TOKEN_WORD, Value: "LEFT", Lexeme: "LEFT"},
+				{Type: TOKEN_WORD, Value: "RIGHT", Lexeme: "RIGHT"},
+				{Type: TOKEN_WORD, Value: "REPORT", Lexeme: "REPORT"},
 			},
 		},
 		{

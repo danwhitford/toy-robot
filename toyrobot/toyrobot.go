@@ -49,6 +49,10 @@ func NewRobot() *Robot {
 
 func (r *Robot) LoadEnv() {
 	r.Dictionary["BOARD"] = r.printBoard
+	r.Dictionary["REPORT"] = r.report
+	r.Dictionary["RIGHT"] = r.right
+	r.Dictionary["LEFT"] = r.left
+	r.Dictionary["MOVE"] = r.move
 }
 
 func (r *Robot) printBoard() error {
@@ -71,7 +75,7 @@ func (r *Robot) printBoard() error {
 				x[r.X] = "<"
 			}
 		}
-		fmt.Fprint(r.Output, hr)	
+		fmt.Fprint(r.Output, hr)
 		fmt.Fprintf(r.Output, cage, x...)
 	}
 	fmt.Fprint(r.Output, hr)
@@ -185,30 +189,6 @@ func (r *Robot) runInstructions(instructions []byte) error {
 				return err
 			}
 			r.place(x.Value.(int), y.Value.(int), dir.Value.(Direction))
-		case byte(OP_MOVE):
-			idx++
-			err := r.move()
-			if err != nil {
-				return err
-			}
-		case byte(OP_LEFT):
-			idx++
-			err := r.left()
-			if err != nil {
-				return err
-			}
-		case byte(OP_RIGHT):
-			idx++
-			err := r.right()
-			if err != nil {
-				return err
-			}
-		case byte(OP_REPORT):
-			idx++
-			err := r.report()
-			if err != nil {
-				return err
-			}
 		case byte(OP_PUSH_VAL):
 			idx++
 			t := RobotType(instructions[idx])
@@ -236,7 +216,10 @@ func (r *Robot) runInstructions(instructions []byte) error {
 			if !ok {
 				return fmt.Errorf("unknown word %s", word)
 			}
-			return fn()
+			err := fn()
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("invalid instruction %v", instructions[idx])
 		}

@@ -9,19 +9,14 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[OP_PLACE-0]
-	_ = x[OP_MOVE-1]
-	_ = x[OP_LEFT-2]
-	_ = x[OP_RIGHT-3]
-	_ = x[OP_REPORT-4]
-	_ = x[OP_PUSH_VAL-5]
-	_ = x[OP_POP_VAL-6]
-	_ = x[OP_WORD-7]
-	_ = x[OP_EXEC_WORD-8]
+	_ = x[OP_PUSH_VAL-1]
+	_ = x[OP_POP_VAL-2]
+	_ = x[OP_EXEC_WORD-3]
 }
 
-const _Instruction_name = "OP_PLACEOP_MOVEOP_LEFTOP_RIGHTOP_REPORTOP_PUSH_VALOP_POP_VALOP_WORDOP_EXEC_WORD"
+const _Instruction_name = "OP_PLACEOP_PUSH_VALOP_POP_VALOP_EXEC_WORD"
 
-var _Instruction_index = [...]uint8{0, 8, 15, 22, 30, 39, 50, 60, 67, 79}
+var _Instruction_index = [...]uint8{0, 8, 19, 29, 41}
 
 func (i Instruction) String() string {
 	if i >= Instruction(len(_Instruction_index)-1) {

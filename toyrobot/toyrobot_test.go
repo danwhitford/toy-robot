@@ -204,7 +204,7 @@ func TestReportInstruction(t *testing.T) {
 		}
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
-			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
+			t.Fatalf("Error reading instruction %s: %s", tst.instruction, err)
 		}
 		reported := buffer.String()
 		if reported != tst.report {
@@ -253,10 +253,10 @@ func TestWholePrograms(t *testing.T) {
 	var table []struct {
 		program        string
 		expectedOutput string
+		fname          string
 	}
 	for _, testEnt := range testEnts {
 		name := fmt.Sprintf("programs/%s", testEnt.Name())
-		fmt.Println(name)
 		contentBytes, err := programs.ReadFile(name)
 		if err != nil {
 			t.Errorf("Error reading test program %s: %s", testEnt.Name(), err)
@@ -273,9 +273,11 @@ func TestWholePrograms(t *testing.T) {
 		table = append(table, struct {
 			program        string
 			expectedOutput string
+			fname          string
 		}{
 			program,
 			outputSB.String(),
+			testEnt.Name(),
 		})
 	}
 
@@ -289,7 +291,7 @@ func TestWholePrograms(t *testing.T) {
 		}
 		got := buffer.String()
 		if diff := cmp.Diff(tst.expectedOutput, got); diff != "" {
-			t.Errorf("Program output mismatch (-want +got):\n%s", diff)
+			t.Errorf("Program output mismatch for '%s' (-want +got):\n%s", tst.fname, diff)
 		}
 	}
 }

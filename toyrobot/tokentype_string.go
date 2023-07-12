@@ -9,19 +9,15 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[TOKEN_PLACE-0]
-	_ = x[TOKEN_MOVE-1]
-	_ = x[TOKEN_LEFT-2]
-	_ = x[TOKEN_RIGHT-3]
-	_ = x[TOKEN_REPORT-4]
-	_ = x[TOKEN_NUMBER-5]
-	_ = x[TOKEN_COMMA-6]
-	_ = x[TOKEN_DIRECTION-7]
-	_ = x[TOKEN_WORD-8]
+	_ = x[TOKEN_NUMBER-1]
+	_ = x[TOKEN_COMMA-2]
+	_ = x[TOKEN_DIRECTION-3]
+	_ = x[TOKEN_WORD-4]
 }
 
-const _TokenType_name = "TOKEN_PLACETOKEN_MOVETOKEN_LEFTTOKEN_RIGHTTOKEN_REPORTTOKEN_NUMBERTOKEN_COMMATOKEN_DIRECTIONTOKEN_WORD"
+const _TokenType_name = "TOKEN_PLACETOKEN_NUMBERTOKEN_COMMATOKEN_DIRECTIONTOKEN_WORD"
 
-var _TokenType_index = [...]uint8{0, 11, 21, 31, 42, 54, 66, 77, 92, 102}
+var _TokenType_index = [...]uint8{0, 11, 23, 34, 49, 59}
 
 func (i TokenType) String() string {
 	if i >= TokenType(len(_TokenType_index)-1) {
