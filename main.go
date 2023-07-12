@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -14,7 +13,6 @@ func main() {
 	r := toyrobot.NewRobot()
 	buf := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Print(">> ")
 		line, _, err := buf.ReadLine()
 		if err != nil {
 			if err == io.EOF {
