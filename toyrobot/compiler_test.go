@@ -29,8 +29,8 @@ func TestCompile(t *testing.T) {
 					Lexeme: "NORTH",
 				},
 				{
-					Type:   TOKEN_PLACE,
-					Value:  nil,
+					Type:   TOKEN_WORD,
+					Value:  "PLACE",
 					Lexeme: "PLACE",
 				},
 			},
@@ -44,7 +44,8 @@ func TestCompile(t *testing.T) {
 				byte(OP_PUSH_VAL),
 				byte(T_DIRECTION),
 				byte(NORTH),
-				byte(OP_PLACE),
+				byte(OP_EXEC_WORD),
+				'P', 'L', 'A', 'C', 'E', 0,
 			},
 		},
 		{

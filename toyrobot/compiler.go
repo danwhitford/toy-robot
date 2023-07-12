@@ -17,9 +17,7 @@ const (
 type Instruction byte
 
 const (
-	OP_PLACE Instruction = iota
-	OP_PUSH_VAL
-	OP_POP_VAL
+	OP_PUSH_VAL Instruction = iota
 	OP_EXEC_WORD
 )
 
@@ -37,8 +35,6 @@ func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
 			return nil, err
 		}
 		switch token.Type {
-		case TOKEN_PLACE:
-			instructions = append(instructions, byte(OP_PLACE))
 		case TOKEN_NUMBER:
 			instructions = append(
 				instructions,

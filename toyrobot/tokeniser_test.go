@@ -17,7 +17,7 @@ func TestTokenise(t *testing.T) {
 				{Type: TOKEN_NUMBER, Value: 3, Lexeme: "3"},
 				{Type: TOKEN_NUMBER, Value: 2, Lexeme: "2"},
 				{Type: TOKEN_DIRECTION, Value: NORTH, Lexeme: "NORTH"},
-				{Type: TOKEN_PLACE, Value: nil, Lexeme: "PLACE"},
+				{Type: TOKEN_WORD, Value: "PLACE", Lexeme: "PLACE"},
 			},
 		},
 		{

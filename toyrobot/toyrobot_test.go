@@ -13,57 +13,27 @@ import (
 //go:embed programs/*.bot
 var programs embed.FS
 
-func TestCanPlace(t *testing.T) {
-	table := []struct {
-		x, y int
-		f    Direction
-	}{
-		{0, 0, NORTH},
-		{0, 0, EAST},
-		{1, 2, SOUTH},
-		{2, 1, WEST},
-	}
-
-	for _, tst := range table {
-		robot := NewRobot()
-		if robot.Placed {
-			t.Error("Robot should not be placed")
-		}
-		robot.place(tst.x, tst.y, tst.f)
-		if !robot.Placed {
-			t.Error("Robot should be placed")
-		}
-		if robot.X != tst.x {
-			t.Error("Robot X should be 0")
-		}
-		if robot.Y != tst.y {
-			t.Error("Robot Y should be 0")
-		}
-		if robot.F != tst.f {
-			t.Error("Robot F should be NORTH")
-		}
-	}
-}
-
 func TestWontPlaceOffBoard(t *testing.T) {
 	table := []struct {
-		x, y int
-		f    Direction
+		input string
 	}{
-		{-1, 0, NORTH},
-		{0, -1, EAST},
-		{5, 0, SOUTH},
-		{0, 5, WEST},
+		{"7 0 NORTH PLACE"},
+		{"0 7 EAST PLACE"},
+		{"5 0 SOUTH PLACE"},
+		{"0 5 WEST PLACE"},
 	}
 
 	for _, tst := range table {
 		robot := NewRobot()
 		if robot.Placed {
-			t.Error("Robot should not be placed")
+			t.Errorf("Robot should not be placed but is at %d %d %s", robot.X, robot.Y, robot.F)
 		}
-		robot.place(tst.x, tst.y, tst.f)
+		err := robot.ReadInstruction(tst.input)
+		if err != nil {
+			t.Fatalf("error for %s: %s", tst.input, err)
+		}
 		if robot.Placed {
-			t.Error("Robot should not be placed")
+			t.Fatalf("Robot should not be placed but is at %d %d %s", robot.X, robot.Y, robot.F)
 		}
 	}
 }
@@ -87,7 +57,7 @@ func TestReadPlaceInstruction(t *testing.T) {
 		}
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
-			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
+			t.Fatalf("Error reading instruction %s: %s", tst.instruction, err)
 		}
 		if !robot.Placed {
 			t.Error("Robot should be placed")
@@ -107,24 +77,20 @@ func TestReadPlaceInstruction(t *testing.T) {
 func TestReadMoveInstruction(t *testing.T) {
 	table := []struct {
 		instruction string
-		x, y        int
-		f           Direction
 		x2, y2      int
 		f2          Direction
 	}{
-		{"MOVE", 0, 1, NORTH, 0, 2, NORTH},
-		{"MOVE", 1, 0, EAST, 2, 0, EAST},
-		{"MOVE", 1, 2, SOUTH, 1, 1, SOUTH},
-		{"MOVE", 1, 0, WEST, 0, 0, WEST},
-		{"MOVE", 0, 0, SOUTH, 0, 0, SOUTH},
-		{"MOVE", 0, 4, NORTH, 0, 4, NORTH},
-		{"MOVE", 0, 0, WEST, 0, 0, WEST},
-		{"MOVE", 4, 0, EAST, 4, 0, EAST},
+		{"1 0 EAST PLACE MOVE", 2, 0, EAST},
+		{"1 2 SOUTH PLACE MOVE", 1, 1, SOUTH},
+		{"1 0 WEST PLACE MOVE", 0, 0, WEST},
+		{"0 0 SOUTH PLACE MOVE", 0, 0, SOUTH},
+		{"0 4 NORTH PLACE MOVE", 0, 4, NORTH},
+		{"0 0 WEST PLACE MOVE", 0, 0, WEST},
+		{"4 0 EAST PLACE MOVE", 4, 0, EAST},
 	}
 
 	for _, tst := range table {
 		robot := NewRobot()
-		robot.place(tst.x, tst.y, tst.f)
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
@@ -147,23 +113,20 @@ func TestReadMoveInstruction(t *testing.T) {
 func TestLeftRightInstructions(t *testing.T) {
 	table := []struct {
 		instruction string
-		x, y        int
-		f           Direction
 		f2          Direction
 	}{
-		{"LEFT", 0, 0, NORTH, WEST},
-		{"LEFT", 0, 0, EAST, NORTH},
-		{"LEFT", 0, 0, SOUTH, EAST},
-		{"LEFT", 0, 0, WEST, SOUTH},
-		{"RIGHT", 0, 0, NORTH, EAST},
-		{"RIGHT", 0, 0, EAST, SOUTH},
-		{"RIGHT", 0, 0, SOUTH, WEST},
-		{"RIGHT", 0, 0, WEST, NORTH},
+		{"0 0 NORTH PLACE LEFT", WEST},
+		{"0 0 EAST PLACE LEFT", NORTH},
+		{"0 0 SOUTH PLACE LEFT", EAST},
+		{"0 0 WEST PLACE LEFT", SOUTH},
+		{"0 0 NORTH PLACE RIGHT", EAST},
+		{"0 0 EAST PLACE RIGHT", SOUTH},
+		{"0 0 SOUTH PLACE RIGHT", WEST},
+		{"0 0 WEST PLACE RIGHT", NORTH},
 	}
 
 	for _, tst := range table {
 		robot := NewRobot()
-		robot.place(tst.x, tst.y, tst.f)
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
@@ -180,28 +143,19 @@ func TestLeftRightInstructions(t *testing.T) {
 func TestReportInstruction(t *testing.T) {
 	table := []struct {
 		instruction string
-		x, y        int
-		f           Direction
-		place       bool
 		report      string
 	}{
-		{"REPORT", 0, 0, NORTH, true, "0,0,NORTH\n"},
-		{"REPORT", 0, 0, EAST, true, "0,0,EAST\n"},
-		{"REPORT", 0, 0, SOUTH, true, "0,0,SOUTH\n"},
-		{"REPORT", 0, 0, WEST, true, "0,0,WEST\n"},
-		{"REPORT", 0, 0, NORTH, false, "Robot not placed\n"},
+		{"0 0 NORTH PLACE REPORT", "0,0,NORTH\n"},
+		{"0 0 EAST PLACE REPORT", "0,0,EAST\n"},
+		{"0 0 SOUTH PLACE REPORT", "0,0,SOUTH\n"},
+		{"0 0 WEST PLACE REPORT", "0,0,WEST\n"},
+		{"REPORT", "Robot not placed\n"},
 	}
 
 	for _, tst := range table {
 		var buffer bytes.Buffer
 		robot := NewRobot()
 		robot.Output = &buffer
-		if tst.place {
-			robot.place(tst.x, tst.y, tst.f)
-			if !robot.Placed {
-				t.Error("Robot should be placed")
-			}
-		}
 		err := robot.ReadInstruction(tst.instruction)
 		if err != nil {
 			t.Fatalf("Error reading instruction %s: %s", tst.instruction, err)

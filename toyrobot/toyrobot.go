@@ -53,6 +53,7 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["RIGHT"] = r.right
 	r.Dictionary["LEFT"] = r.left
 	r.Dictionary["MOVE"] = r.move
+	r.Dictionary["PLACE"] = r.place
 }
 
 func (r *Robot) printBoard() error {
@@ -82,9 +83,35 @@ func (r *Robot) printBoard() error {
 	return nil
 }
 
-func (r *Robot) place(x, y int, f Direction) error {
+func (r *Robot) place() error {
+	fv, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	yv, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	xv, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+
+	f, ok := fv.Value.(Direction)
+	if !ok {
+		return fmt.Errorf("invalid direction %v", fv.Value)
+	}
+	y, ok := yv.Value.(int)
+	if !ok {
+		return fmt.Errorf("invalid y %v", yv.Value)
+	}
+	x, ok := xv.Value.(int)
+	if !ok {
+		return fmt.Errorf("invalid x %v", xv.Value)
+	}
+
 	if x < 0 || x > 4 || y < 0 || y > 4 {
-		return fmt.Errorf("invalid coordinates %d,%d", x, y)
+		return nil
 	}
 	if f < NORTH || f > WEST {
 		return fmt.Errorf("invalid facing %v", f)
@@ -174,21 +201,6 @@ func (r *Robot) runInstructions(instructions []byte) error {
 	idx := 0
 	for idx < len(instructions) {
 		switch instructions[idx] {
-		case byte(OP_PLACE):
-			idx++
-			dir, err := r.RobotValueStack.Pop()
-			if err != nil {
-				return err
-			}
-			y, err := r.RobotValueStack.Pop()
-			if err != nil {
-				return err
-			}
-			x, err := r.RobotValueStack.Pop()
-			if err != nil {
-				return err
-			}
-			r.place(x.Value.(int), y.Value.(int), dir.Value.(Direction))
 		case byte(OP_PUSH_VAL):
 			idx++
 			t := RobotType(instructions[idx])
