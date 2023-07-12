@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/danwhitford/toyrobot/toy-robot"
+	"github.com/danwhitford/toyrobot/toyrobot"
 )
 
 func main() {
