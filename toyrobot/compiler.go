@@ -11,6 +11,7 @@ type RobotType byte
 const (
 	T_INT RobotType = iota
 	T_DIRECTION
+	T_BOOL
 )
 
 //go:generate stringer -type=Instruction

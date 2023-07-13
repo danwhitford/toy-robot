@@ -25,7 +25,7 @@ func (r *Robot) {{ .FunctionName }}() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) {{ .FunctionOp }} a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: {{ .ResType }}, Value: b.Value.(int) {{ .FunctionOp }} a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -38,17 +38,18 @@ func main() {
 	datas := []struct {
 		FunctionName string
 		FunctionOp   string
+		ResType      string
 	}{
-		{"mul", "*"},
-		{"add", "+"},
-		{"sub", "-"},
-		{"div", "/"},
-		{"eq", "=="},
-		{"neq", "!="},
-		{"lt", "<"},
-		{"gt", ">"},
-		{"lte", "<="},
-		{"gte", ">="},
+		{"mul", "*", "T_INT"},
+		{"add", "+", "T_INT"},
+		{"sub", "-", "T_INT"},
+		{"div", "/", "T_INT"},
+		{"eq", "==", "T_BOOL"},
+		{"neq", "!=", "T_BOOL"},
+		{"lt", "<", "T_BOOL"},
+		{"gt", ">", "T_BOOL"},
+		{"lte", "<=", "T_BOOL"},
+		{"gte", ">=", "T_BOOL"},
 	}
 
 	tmpl, err := template.New("robotMul").Parse(robotTemplate)

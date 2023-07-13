@@ -10,11 +10,12 @@ func _() {
 	var x [1]struct{}
 	_ = x[T_INT-0]
 	_ = x[T_DIRECTION-1]
+	_ = x[T_BOOL-2]
 }
 
-const _RobotType_name = "T_INTT_DIRECTION"
+const _RobotType_name = "T_INTT_DIRECTIONT_BOOL"
 
-var _RobotType_index = [...]uint8{0, 5, 16}
+var _RobotType_index = [...]uint8{0, 5, 16, 22}
 
 func (i RobotType) String() string {
 	if i >= RobotType(len(_RobotType_index)-1) {

@@ -100,7 +100,7 @@ func (r *Robot) eq() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) == a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) == a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -121,7 +121,7 @@ func (r *Robot) neq() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) != a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) != a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -142,7 +142,7 @@ func (r *Robot) lt() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) < a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) < a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -163,7 +163,7 @@ func (r *Robot) gt() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) > a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) > a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -184,7 +184,7 @@ func (r *Robot) lte() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) <= a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) <= a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}
@@ -205,7 +205,7 @@ func (r *Robot) gte() error {
 	}
 	switch a.Type {
 	case T_INT:
-		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) >= a.Value.(int)})
+		r.RobotValueStack.Push(RobotValue{Type: T_BOOL, Value: b.Value.(int) >= a.Value.(int)})
 	default:
 		return fmt.Errorf("unsupported type")
 	}

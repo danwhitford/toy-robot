@@ -1,0 +1,7 @@
+5 5 eq prn
+10 5 gt prn
+10 5 lt prn
+### OUTPUT ###
+# true
+# true
+# false
