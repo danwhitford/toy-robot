@@ -40,12 +40,6 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 			return []Token{}, err
 		}
 		switch {
-		case unicode.IsLetter(currentRune):
-			token, err := t.getTokenAlpha()
-			if err != nil {
-				return []Token{}, err
-			}
-			tokens = append(tokens, token)
 		case unicode.IsDigit(currentRune):
 			token, err := t.getTokenNumber()
 			if err != nil {
@@ -65,6 +59,12 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 					return []Token{}, err
 				}
 			}
+		case unicode.IsPrint(currentRune):
+			token, err := t.getTokenAlpha()
+			if err != nil {
+				return []Token{}, err
+			}
+			tokens = append(tokens, token)
 		case unicode.IsSpace(currentRune):
 			t.belt.GetNext()
 		default:

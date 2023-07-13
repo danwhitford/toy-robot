@@ -59,6 +59,15 @@ func TestTokenise(t *testing.T) {
 				{Type: TOKEN_NUMBER, Value: 40, Lexeme: "40"},
 			},
 		},
+		{
+			"+ - * /",
+			[]Token{
+				{Type: TOKEN_WORD, Value: "+", Lexeme: "+"},
+				{Type: TOKEN_WORD, Value: "-", Lexeme: "-"},
+				{Type: TOKEN_WORD, Value: "*", Lexeme: "*"},
+				{Type: TOKEN_WORD, Value: "/", Lexeme: "/"},
+			},
+		},
 	}
 
 	for _, tst := range table {

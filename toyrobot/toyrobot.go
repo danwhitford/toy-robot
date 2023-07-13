@@ -56,6 +56,45 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["LEFT"] = r.left
 	r.Dictionary["MOVE"] = r.move
 	r.Dictionary["PLACE"] = r.place
+	r.Dictionary["PRN"] = r.prn
+	r.Dictionary["DUP"] = r.dup
+	r.Dictionary["V"] = r.v
+	r.Dictionary["CR"] = r.cr
+}
+
+func (r *Robot) cr() error {
+	fmt.Fprintln(r.Output)
+	return nil
+}
+
+func (r *Robot) v() error {
+	if len(*r.RobotValueStack) == 0 {
+		return fmt.Errorf("stack is empty")
+	}
+
+	for _, el := range *r.RobotValueStack {
+		fmt.Fprintln(r.Output, el.Value)
+	}
+	return nil
+}
+
+func (r *Robot) dup() error {
+	top, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	r.RobotValueStack.Push(top)
+	r.RobotValueStack.Push(top)
+	return nil
+}
+
+func (r *Robot) prn() error {
+	top, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(r.Output, top.Value)
+	return nil
 }
 
 func (r *Robot) printBoard() error {
