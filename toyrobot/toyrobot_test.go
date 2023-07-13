@@ -28,7 +28,7 @@ func TestWontPlaceOffBoard(t *testing.T) {
 		if robot.Placed {
 			t.Errorf("Robot should not be placed but is at %d %d %s", robot.X, robot.Y, robot.F)
 		}
-		err := robot.ReadInstruction(tst.input)
+		err := robot.RunProgram(tst.input)
 		if err != nil {
 			t.Fatalf("error for %s: %s", tst.input, err)
 		}
@@ -55,7 +55,7 @@ func TestReadPlaceInstruction(t *testing.T) {
 		if robot.Placed {
 			t.Error("Robot should not be placed")
 		}
-		err := robot.ReadInstruction(tst.instruction)
+		err := robot.RunProgram(tst.instruction)
 		if err != nil {
 			t.Fatalf("Error reading instruction %s: %s", tst.instruction, err)
 		}
@@ -91,7 +91,7 @@ func TestReadMoveInstruction(t *testing.T) {
 
 	for _, tst := range table {
 		robot := NewRobot()
-		err := robot.ReadInstruction(tst.instruction)
+		err := robot.RunProgram(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
 		}
@@ -127,7 +127,7 @@ func TestLeftRightInstructions(t *testing.T) {
 
 	for _, tst := range table {
 		robot := NewRobot()
-		err := robot.ReadInstruction(tst.instruction)
+		err := robot.RunProgram(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
 		}
@@ -156,7 +156,7 @@ func TestReportInstruction(t *testing.T) {
 		var buffer bytes.Buffer
 		robot := NewRobot()
 		robot.Output = &buffer
-		err := robot.ReadInstruction(tst.instruction)
+		err := robot.RunProgram(tst.instruction)
 		if err != nil {
 			t.Fatalf("Error reading instruction %s: %s", tst.instruction, err)
 		}
@@ -185,7 +185,7 @@ func TestManyInstructionsOnOneLine(t *testing.T) {
 		var buffer bytes.Buffer
 		robot := NewRobot()
 		robot.Output = &buffer
-		err := robot.ReadInstruction(tst.instruction)
+		err := robot.RunProgram(tst.instruction)
 		if err != nil {
 			t.Errorf("Error reading instruction %s: %s", tst.instruction, err)
 		}
@@ -239,7 +239,7 @@ func TestWholePrograms(t *testing.T) {
 		var buffer bytes.Buffer
 		robot := NewRobot()
 		robot.Output = &buffer
-		err := robot.ReadInstruction(tst.program)
+		err := robot.RunProgram(tst.program)
 		if err != nil {
 			t.Fatalf("Error reading program %s: %s", tst.program, err)
 		}

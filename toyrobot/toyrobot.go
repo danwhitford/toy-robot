@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/danwhitford/toyrobot/belt"
 	"github.com/danwhitford/toyrobot/stack"
 )
 
@@ -28,6 +29,7 @@ type Robot struct {
 	RobotCompiler   *RobotCompiler
 	RobotValueStack *stack.RobotStack[RobotValue]
 	Dictionary      map[string]func() error
+	Instructions    *belt.Belt[byte]
 }
 
 func NewRobot() *Robot {
@@ -196,50 +198,65 @@ func (r *Robot) report() error {
 	return nil
 }
 
-// TODO make this better with instruction belt
-func (r *Robot) runInstructions(instructions []byte) error {
-	idx := 0
-	for idx < len(instructions) {
-		switch instructions[idx] {
+func (r *Robot) runInstructions() error {
+	for r.Instructions.HasNext() {
+		currentInstruction, err := r.Instructions.GetNext()
+		if err != nil {
+			return err
+		}
+		switch currentInstruction {
 		case byte(OP_PUSH_VAL):
-			idx++
-			t := RobotType(instructions[idx])
-			idx++
+			typeInstruction, err := r.Instructions.GetNext()
+			if err != nil {
+				return err
+			}
+			t := RobotType(typeInstruction)
 			switch t {
 			case T_INT:
-				v := int(instructions[idx])
-				idx++
+				vi, err := r.Instructions.GetNext()
+				if err != nil {
+					return err
+				}
+				v := int(vi)
 				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
 			case T_DIRECTION:
-				v := Direction(instructions[idx])
-				idx++
+				vi, err := r.Instructions.GetNext()
+				if err != nil {
+					return err
+				}
+				v := Direction(vi)
 				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
 			}
 		case byte(OP_EXEC_WORD):
-			idx++
 			wordBytes := make([]byte, 0)
-			for instructions[idx] != 0 {
-				wordBytes = append(wordBytes, instructions[idx])
-				idx++
+			t, err := r.Instructions.GetNext()
+			if err != nil {
+				return err
 			}
-			idx++
+			for t != 0 {
+				wordBytes = append(wordBytes, t)
+				t, err = r.Instructions.GetNext()
+				if err != nil {
+					return err
+				}
+			}
 			word := string(wordBytes)
 			fn, ok := r.Dictionary[word]
 			if !ok {
 				return fmt.Errorf("unknown word %s", word)
 			}
-			err := fn()
+			err = fn()
 			if err != nil {
 				return err
 			}
 		default:
-			return fmt.Errorf("invalid instruction %v", instructions[idx])
+			return fmt.Errorf("invalid instruction %v", currentInstruction)
 		}
 	}
 	return nil
 }
 
-func (r *Robot) ReadInstruction(instruction string) error {
+func (r *Robot) RunProgram(instruction string) error {
 	tokens, err := r.RobotTokeniser.Tokenise(instruction)
 	if err != nil {
 		return err
@@ -248,5 +265,6 @@ func (r *Robot) ReadInstruction(instruction string) error {
 	if err != nil {
 		return err
 	}
-	return r.runInstructions(instructions)
+	r.Instructions = belt.NewBelt[byte](instructions)
+	return r.runInstructions()
 }

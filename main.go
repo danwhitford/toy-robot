@@ -21,7 +21,7 @@ func main() {
 			log.Println(err)
 			continue
 		}
-		err = r.ReadInstruction(string(line))
+		err = r.RunProgram(string(line))
 		if err != nil {
 			log.Println(err)
 			continue
