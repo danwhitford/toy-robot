@@ -50,6 +50,15 @@ func TestTokenise(t *testing.T) {
 				{Type: TOKEN_DIRECTION, Value: WEST, Lexeme: "WEST"},
 			},
 		},
+		{
+			"10 20 30 40",
+			[]Token{
+				{Type: TOKEN_NUMBER, Value: 10, Lexeme: "10"},
+				{Type: TOKEN_NUMBER, Value: 20, Lexeme: "20"},
+				{Type: TOKEN_NUMBER, Value: 30, Lexeme: "30"},
+				{Type: TOKEN_NUMBER, Value: 40, Lexeme: "40"},
+			},
+		},
 	}
 
 	for _, tst := range table {

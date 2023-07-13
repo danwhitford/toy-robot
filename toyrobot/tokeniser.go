@@ -76,15 +76,15 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 }
 
 func (t *RobotTokeniser) getTokenNumber() (Token, error) {
-	curr, err := t.belt.GetNext()
+	lexeme, err := t.getLexeme()
 	if err != nil {
 		return Token{}, err
 	}
-	number, err := strconv.Atoi(string(curr))
+	number, err := strconv.Atoi(lexeme)
 	if err != nil {
-		return Token{}, fmt.Errorf("invalid token, expecting number but got '%s'", string(curr))
+		return Token{}, fmt.Errorf("invalid token, expecting number but got '%s'", string(lexeme))
 	}
-	return Token{Type: TOKEN_NUMBER, Value: number, Lexeme: string(curr)}, nil
+	return Token{Type: TOKEN_NUMBER, Value: number, Lexeme: lexeme}, nil
 }
 
 func (t *RobotTokeniser) getTokenComma() (Token, error) {
@@ -126,7 +126,7 @@ func (t *RobotTokeniser) getLexeme() (string, error) {
 			return "", err
 		}
 		currentRune := curr
-		if unicode.IsLetter(currentRune) {
+		if !unicode.IsSpace(currentRune) {
 			lexeme += string(currentRune)
 		} else {
 			break
