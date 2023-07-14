@@ -1,0 +1,24 @@
+1 2 3 drop v cr xx
+1 2 swap v cr xx
+1 2 3 rot v cr xx
+1 dup v cr xx
+1 2 3 over v cr xx
+### OUTPUT ###
+# 1
+# 2
+# 
+# 2
+# 1
+# 
+# 2
+# 3
+# 1
+# 
+# 1
+# 1
+# 
+# 1
+# 2
+# 3
+# 2
+# 
