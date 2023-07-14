@@ -1,6 +1,6 @@
-5 5 eq prn
-10 5 gt prn
-10 5 lt prn
+5 5 eq .
+10 5 gt .
+10 5 lt .
 ### OUTPUT ###
 # true
 # true

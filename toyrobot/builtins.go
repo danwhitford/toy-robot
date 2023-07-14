@@ -17,7 +17,7 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["PLACE"] = r.place
 
 	// Stack stuff
-	r.Dictionary["PRN"] = r.prn
+	r.Dictionary["."] = r.prn
 	r.Dictionary["DUP"] = r.dup
 	r.Dictionary["V"] = r.v
 	r.Dictionary["CR"] = r.cr
@@ -122,7 +122,12 @@ func (r *Robot) v() error {
 	}
 
 	for _, el := range *r.RobotValueStack {
-		fmt.Fprintf(r.Output, "%#v\n", el.Value)
+		switch el.Type {
+		case T_STRING:
+			fmt.Fprintf(r.Output, "%#v\n", el.Value)
+		default:
+			fmt.Fprintln(r.Output, el.Value)
+		}
 	}
 	return nil
 }

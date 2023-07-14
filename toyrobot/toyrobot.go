@@ -9,16 +9,6 @@ import (
 	"github.com/danwhitford/toyrobot/stack"
 )
 
-//go:generate stringer -type=Direction
-type Direction byte
-
-const (
-	NORTH Direction = iota
-	EAST
-	SOUTH
-	WEST
-)
-
 // This is a robot
 type Robot struct {
 	X, Y            int

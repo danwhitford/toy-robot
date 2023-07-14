@@ -14,3 +14,13 @@ type RobotValue struct {
 	Type  RobotType
 	Value any
 }
+
+//go:generate stringer -type=Direction
+type Direction byte
+
+const (
+	NORTH Direction = iota
+	EAST
+	SOUTH
+	WEST
+)

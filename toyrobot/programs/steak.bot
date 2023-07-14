@@ -2,9 +2,9 @@
 "cheese sandwich"
 "steak and chips"
 v
-prn
-prn
-prn
+.
+.
+.
 ### OUTPUT ###
 # "eggs and bacon"
 # "cheese sandwich"
