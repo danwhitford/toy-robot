@@ -9,7 +9,6 @@ import (
 const robotTemplate = `package toyrobot
 
 import "fmt"
-
 {{ range . }}
 func (r *Robot) {{ .FunctionName }}() error {
 	a, err := r.RobotValueStack.Pop()
@@ -31,8 +30,7 @@ func (r *Robot) {{ .FunctionName }}() error {
 	}
 	return nil
 }
-{{ end }}
-`
+{{ end }}`
 
 func main() {
 	datas := []struct {
