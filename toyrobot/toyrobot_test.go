@@ -244,6 +244,10 @@ func TestWholePrograms(t *testing.T) {
 			t.Fatalf("Error reading program %s: %s", tst.program, err)
 		}
 		got := buffer.String()
+
+		tst.expectedOutput = strings.TrimSpace(tst.expectedOutput)
+		got = strings.TrimSpace(got)
+
 		if diff := cmp.Diff(tst.expectedOutput, got); diff != "" {
 			t.Errorf("Program output mismatch for '%s' (-want +got):\n%s", tst.fname, diff)
 		}

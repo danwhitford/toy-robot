@@ -1,0 +1,14 @@
+"eggs and bacon"
+"cheese sandwich"
+"steak and chips"
+v
+prn
+prn
+prn
+### OUTPUT ###
+# "eggs and bacon"
+# "cheese sandwich"
+# "steak and chips"
+# steak and chips
+# cheese sandwich
+# eggs and bacon

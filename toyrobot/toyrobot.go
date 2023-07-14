@@ -76,6 +76,30 @@ func (r *Robot) runInstructions() error {
 				}
 				v := Direction(vi)
 				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
+			case T_BOOL:
+				vi, err := r.Instructions.GetNext()
+				if err != nil {
+					return err
+				}
+				v := vi != 0
+				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
+			case T_STRING:
+				vs := make([]byte, 0)
+				vi, err := r.Instructions.GetNext()
+				if err != nil {
+					return err
+				}
+				for vi != 0 {
+					vs = append(vs, vi)
+					vi, err = r.Instructions.GetNext()
+					if err != nil {
+						return err
+					}
+				}
+				v := string(vs)
+				r.RobotValueStack.Push(RobotValue{Type: t, Value: v})
+			default:
+				return fmt.Errorf("invalid type %s", t)
 			}
 		case byte(OP_EXEC_WORD):
 			wordBytes := make([]byte, 0)

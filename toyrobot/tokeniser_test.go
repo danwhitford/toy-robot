@@ -68,6 +68,12 @@ func TestTokenise(t *testing.T) {
 				{Type: TOKEN_WORD, Value: "/", Lexeme: "/"},
 			},
 		},
+		{
+			"\"hello world\"",
+			[]Token{
+				{Type: TOKEN_STRING, Value: "hello world", Lexeme: "\"hello world\""},
+			},
+		},
 	}
 
 	for _, tst := range table {

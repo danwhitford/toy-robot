@@ -20,6 +20,8 @@ const (
 	TOKEN_NUMBER TokenType = iota
 	TOKEN_DIRECTION
 	TOKEN_WORD
+	TOKEN_BOOL
+	TOKEN_STRING
 )
 
 type Token struct {
@@ -52,6 +54,12 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 					return []Token{}, err
 				}
 			}
+		case currentRune == '"':
+			token, err := t.getTokenString()
+			if err != nil {
+				return []Token{}, err
+			}
+			tokens = append(tokens, token)
 		case unicode.IsPrint(currentRune):
 			token, err := t.getTokenAlpha()
 			if err != nil {
@@ -94,6 +102,10 @@ func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
 		return Token{Type: TOKEN_DIRECTION, Value: SOUTH, Lexeme: lexeme}, nil
 	case "WEST":
 		return Token{Type: TOKEN_DIRECTION, Value: WEST, Lexeme: lexeme}, nil
+	case "TRUE":
+		return Token{Type: TOKEN_BOOL, Value: true, Lexeme: lexeme}, nil
+	case "FALSE":
+		return Token{Type: TOKEN_BOOL, Value: false, Lexeme: lexeme}, nil
 	default:
 		return Token{Type: TOKEN_WORD, Value: strings.ToUpper(lexeme), Lexeme: lexeme}, nil
 	}
@@ -114,4 +126,25 @@ func (t *RobotTokeniser) getLexeme() (string, error) {
 		}
 	}
 	return lexeme, nil
+}
+
+func (t *RobotTokeniser) getTokenString() (Token, error) {
+	_, err := t.input.GetNext()
+	if err != nil {
+		return Token{}, err
+	}
+	lexeme := ""
+	for t.input.HasNext() {
+		curr, err := t.input.GetNext()
+		if err != nil {
+			return Token{}, err
+		}
+		currentRune := curr
+		if currentRune == '"' {
+			break
+		} else {
+			lexeme += string(currentRune)
+		}
+	}
+	return Token{TOKEN_STRING, lexeme, fmt.Sprintf("\"%s\"", lexeme)}, nil
 }

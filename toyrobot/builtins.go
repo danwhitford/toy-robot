@@ -122,7 +122,7 @@ func (r *Robot) v() error {
 	}
 
 	for _, el := range *r.RobotValueStack {
-		fmt.Fprintln(r.Output, el.Value)
+		fmt.Fprintf(r.Output, "%#v\n", el.Value)
 	}
 	return nil
 }
