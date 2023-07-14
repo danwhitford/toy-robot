@@ -34,7 +34,6 @@ type Robot struct {
 
 func NewRobot() *Robot {
 	stack := make(stack.RobotStack[RobotValue], 0)
-
 	dict := make(map[string]func() error)
 
 	r := Robot{

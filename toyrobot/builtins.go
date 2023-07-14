@@ -1,6 +1,10 @@
 package toyrobot
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/danwhitford/toyrobot/stack"
+)
 
 //go:generate go run ../templates/generate_builtins.go
 func (r *Robot) LoadEnv() {
@@ -17,12 +21,18 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["DUP"] = r.dup
 	r.Dictionary["V"] = r.v
 	r.Dictionary["CR"] = r.cr
+	r.Dictionary["DROP"] = r.drop
+	r.Dictionary["SWAP"] = r.swap
+	r.Dictionary["OVER"] = r.over
+	r.Dictionary["ROT"] = r.rot
+	r.Dictionary["XX"] = r.clear
 
 	// Math stuff
 	r.Dictionary["+"] = r.add
 	r.Dictionary["-"] = r.sub
 	r.Dictionary["*"] = r.mul
 	r.Dictionary["/"] = r.div
+	r.Dictionary["MOD"] = r.mod
 
 	// Comparison stuff
 	r.Dictionary["EQ"] = r.eq
@@ -31,6 +41,74 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["LTE"] = r.lte
 	r.Dictionary["GTE"] = r.gte
 	r.Dictionary["NEQ"] = r.neq
+}
+
+func (r *Robot) rot() error {
+	a, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	b, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	c, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	r.RobotValueStack.Push(b)
+	r.RobotValueStack.Push(a)
+	r.RobotValueStack.Push(c)
+	return nil
+}
+
+func (r *Robot) over() error {
+	a, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	b, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	r.RobotValueStack.Push(b)
+	r.RobotValueStack.Push(a)
+	r.RobotValueStack.Push(b)
+	return nil
+}
+
+func (r *Robot) swap() error {
+	a, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	b, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	r.RobotValueStack.Push(a)
+	r.RobotValueStack.Push(b)
+	return nil
+}
+
+func (r *Robot) dup() error {
+	top, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	r.RobotValueStack.Push(top)
+	r.RobotValueStack.Push(top)
+	return nil
+}
+
+func (r *Robot) drop() error {
+	_, err := r.RobotValueStack.Pop()
+	return err
+}
+
+func (r *Robot) clear() error {
+	r.RobotValueStack = &stack.RobotStack[RobotValue]{}
+	return nil
 }
 
 func (r *Robot) cr() error {
@@ -46,16 +124,6 @@ func (r *Robot) v() error {
 	for _, el := range *r.RobotValueStack {
 		fmt.Fprintln(r.Output, el.Value)
 	}
-	return nil
-}
-
-func (r *Robot) dup() error {
-	top, err := r.RobotValueStack.Pop()
-	if err != nil {
-		return err
-	}
-	r.RobotValueStack.Push(top)
-	r.RobotValueStack.Push(top)
 	return nil
 }
 

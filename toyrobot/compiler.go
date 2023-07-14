@@ -23,15 +23,15 @@ const (
 )
 
 type RobotCompiler struct {
-	belt *belt.Belt[Token]
+	tokens *belt.Belt[Token]
 }
 
 func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
-	r.belt = belt.NewBelt[Token](input)
+	r.tokens = belt.NewBelt[Token](input)
 
 	instructions := make([]byte, 0)
-	for r.belt.HasNext() {
-		token, err := r.belt.GetNext()
+	for r.tokens.HasNext() {
+		token, err := r.tokens.GetNext()
 		if err != nil {
 			return nil, err
 		}

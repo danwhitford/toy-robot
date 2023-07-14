@@ -86,6 +86,27 @@ func (r *Robot) div() error {
 	return nil
 }
 
+func (r *Robot) mod() error {
+	a, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	b, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	if a.Type != b.Type {
+		return fmt.Errorf("types do not match")
+	}
+	switch a.Type {
+	case T_INT:
+		r.RobotValueStack.Push(RobotValue{Type: T_INT, Value: b.Value.(int) % a.Value.(int)})
+	default:
+		return fmt.Errorf("unsupported type")
+	}
+	return nil
+}
+
 func (r *Robot) eq() error {
 	a, err := r.RobotValueStack.Pop()
 	if err != nil {

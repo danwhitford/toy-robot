@@ -10,7 +10,7 @@ import (
 )
 
 type RobotTokeniser struct {
-	belt *belt.Belt[rune]
+	input *belt.Belt[rune]
 }
 
 type TokenType byte
@@ -18,7 +18,6 @@ type TokenType byte
 //go:generate stringer -type=TokenType
 const (
 	TOKEN_NUMBER TokenType = iota
-	TOKEN_COMMA
 	TOKEN_DIRECTION
 	TOKEN_WORD
 )
@@ -32,10 +31,10 @@ type Token struct {
 func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 	tokens := make([]Token, 0)
 
-	t.belt = belt.NewBelt[rune]([]rune(input))
+	t.input = belt.NewBelt[rune]([]rune(input))
 
-	for t.belt.HasNext() {
-		currentRune, err := t.belt.Peek()
+	for t.input.HasNext() {
+		currentRune, err := t.input.Peek()
 		if err != nil {
 			return []Token{}, err
 		}
@@ -46,15 +45,9 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 				return []Token{}, err
 			}
 			tokens = append(tokens, token)
-		case currentRune == ',':
-			token, err := t.getTokenComma()
-			if err != nil {
-				return []Token{}, err
-			}
-			tokens = append(tokens, token)
 		case currentRune == '#':
-			for currentRune != '\n' && t.belt.HasNext() {
-				currentRune, err = t.belt.GetNext()
+			for currentRune != '\n' && t.input.HasNext() {
+				currentRune, err = t.input.GetNext()
 				if err != nil {
 					return []Token{}, err
 				}
@@ -66,7 +59,7 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 			}
 			tokens = append(tokens, token)
 		case unicode.IsSpace(currentRune):
-			t.belt.GetNext()
+			t.input.GetNext()
 		default:
 			return []Token{}, fmt.Errorf("invalid token, unexpected '%s'", string(currentRune))
 		}
@@ -85,18 +78,6 @@ func (t *RobotTokeniser) getTokenNumber() (Token, error) {
 		return Token{}, fmt.Errorf("invalid token, expecting number but got '%s'", string(lexeme))
 	}
 	return Token{Type: TOKEN_NUMBER, Value: number, Lexeme: lexeme}, nil
-}
-
-func (t *RobotTokeniser) getTokenComma() (Token, error) {
-	curr, err := t.belt.GetNext()
-	if err != nil {
-		return Token{}, err
-	}
-	if curr == ',' {
-		return Token{Type: TOKEN_COMMA, Value: nil, Lexeme: ","}, nil
-	}
-
-	return Token{}, fmt.Errorf("invalid token, expecting COMMA")
 }
 
 func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
@@ -120,8 +101,8 @@ func (t *RobotTokeniser) getTokenAlpha() (Token, error) {
 
 func (t *RobotTokeniser) getLexeme() (string, error) {
 	lexeme := ""
-	for t.belt.HasNext() {
-		curr, err := t.belt.GetNext()
+	for t.input.HasNext() {
+		curr, err := t.input.GetNext()
 		if err != nil {
 			return "", err
 		}

@@ -44,6 +44,7 @@ func main() {
 		{"add", "+", "T_INT"},
 		{"sub", "-", "T_INT"},
 		{"div", "/", "T_INT"},
+		{"mod", "%", "T_INT"},
 		{"eq", "==", "T_BOOL"},
 		{"neq", "!=", "T_BOOL"},
 		{"lt", "<", "T_BOOL"},
