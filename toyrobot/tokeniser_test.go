@@ -74,6 +74,18 @@ func TestTokenise(t *testing.T) {
 				{Type: TOKEN_STRING, Value: "hello world", Lexeme: "\"hello world\""},
 			},
 		},
+		{
+			"15 5 GT IF \"15 is bigger than 5\" . FI",
+			[]Token{
+				{Type: TOKEN_NUMBER, Value: 15, Lexeme: "15"},
+				{Type: TOKEN_NUMBER, Value: 5, Lexeme: "5"},
+				{Type: TOKEN_WORD, Value: "GT", Lexeme: "GT"},
+				{Type: TOKEN_WORD, Value: "IF", Lexeme: "IF"},
+				{Type: TOKEN_STRING, Value: "15 is bigger than 5", Lexeme: "\"15 is bigger than 5\""},
+				{Type: TOKEN_WORD, Value: ".", Lexeme: "."},
+				{Type: TOKEN_WORD, Value: "FI", Lexeme: "FI"},
+			},
+		},
 	}
 
 	for _, tst := range table {

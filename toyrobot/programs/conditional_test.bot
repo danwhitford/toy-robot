@@ -1,0 +1,4 @@
+TRUE IF "hello" . FI
+FALSE IF "nope" . FI
+### OUTPUT ###
+# hello

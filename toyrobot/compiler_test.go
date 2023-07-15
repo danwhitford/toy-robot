@@ -60,6 +60,28 @@ func TestCompile(t *testing.T) {
 				byte(OP_EXEC_WORD), 'M', 'O', 'V', 'E', 0,
 			},
 		},
+		{
+			input: []Token{
+				{TOKEN_BOOL, true, "true"},
+				{TOKEN_WORD, "IF", "IF"},
+				{TOKEN_STRING, "hello", "\"hello\""},
+				{TOKEN_WORD, ".", "."},
+				{TOKEN_WORD, "FI", "FI"},
+			},
+			want: []byte{
+				byte(OP_PUSH_VAL),
+				byte(T_BOOL),
+				byte(1),
+				byte(OP_EXEC_WORD),
+				'I', 'F', 0,
+				19,
+				byte(OP_PUSH_VAL),
+				byte(T_STRING),
+				'h', 'e', 'l', 'l', 'o', 0,
+				byte(OP_EXEC_WORD),
+				'.', 0,
+			},
+		},
 	}
 
 	for _, test := range table {

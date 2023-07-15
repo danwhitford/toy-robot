@@ -41,6 +41,28 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["LTE"] = r.lte
 	r.Dictionary["GTE"] = r.gte
 	r.Dictionary["NEQ"] = r.neq
+
+	// Conditional stuff
+	r.Dictionary["IF"] = r.ifStatement
+}
+
+func (r *Robot) ifStatement() error {
+	cond, err := r.RobotValueStack.Pop()
+	if err != nil {
+		return err
+	}
+	if cond.Type != T_BOOL {
+		return fmt.Errorf("expected bool for IF, got %s", cond.Type)
+	}
+	skipTo, err := r.Instructions.GetNext()
+	if err != nil {
+		return err
+	}
+
+	if !cond.Value.(bool) {
+		r.Instructions.Ptr = int(skipTo)
+	}
+	return nil
 }
 
 func (r *Robot) rot() error {

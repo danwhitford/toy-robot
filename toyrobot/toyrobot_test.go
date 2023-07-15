@@ -241,7 +241,7 @@ func TestWholePrograms(t *testing.T) {
 		robot.Output = &buffer
 		err := robot.RunProgram(tst.program)
 		if err != nil {
-			t.Fatalf("Error reading program %s: %s", tst.program, err)
+			t.Fatalf("Error reading program '%s': %s", tst.fname, err)
 		}
 		got := buffer.String()
 

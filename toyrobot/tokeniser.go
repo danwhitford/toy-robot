@@ -60,7 +60,7 @@ func (t *RobotTokeniser) Tokenise(input string) ([]Token, error) {
 				return []Token{}, err
 			}
 			tokens = append(tokens, token)
-		case unicode.IsPrint(currentRune):
+		case !unicode.IsSpace(currentRune) && unicode.IsPrint(currentRune):
 			token, err := t.getTokenAlpha()
 			if err != nil {
 				return []Token{}, err

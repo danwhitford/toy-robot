@@ -107,14 +107,14 @@ func (r *Robot) runInstructions() error {
 			word := string(wordBytes)
 			fn, ok := r.Dictionary[word]
 			if !ok {
-				return fmt.Errorf("unknown word %s", word)
+				return fmt.Errorf("unknown word '%s'", word)
 			}
 			err = fn()
 			if err != nil {
 				return err
 			}
 		default:
-			return fmt.Errorf("invalid instruction %v", currentInstruction)
+			return fmt.Errorf("RUNTIME ERR: invalid instruction %v\n%#v", currentInstruction, r.Instructions)
 		}
 	}
 	return nil
