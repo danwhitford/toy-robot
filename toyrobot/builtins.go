@@ -44,6 +44,16 @@ func (r *Robot) LoadEnv() {
 
 	// Conditional stuff
 	r.Dictionary["IF"] = r.ifStatement
+	r.Dictionary["JMP"] = r.jmp
+}
+
+func (r *Robot) jmp() error {
+	skipTo, err := r.Instructions.GetNext()
+	if err != nil {
+		return err
+	}
+	r.Instructions.Ptr = int(skipTo)
+	return nil
 }
 
 func (r *Robot) ifStatement() error {

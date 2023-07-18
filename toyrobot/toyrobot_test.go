@@ -243,12 +243,11 @@ func TestWholePrograms(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Error reading program '%s': %s", tst.fname, err)
 		}
-		got := buffer.String()
 
-		tst.expectedOutput = strings.TrimSpace(tst.expectedOutput)
-		got = strings.TrimSpace(got)
+		wantLines := strings.Split(strings.TrimSpace(tst.expectedOutput), "\n")
+		gotLines := strings.Split(strings.TrimSpace(buffer.String()), "\n")
 
-		if diff := cmp.Diff(tst.expectedOutput, got); diff != "" {
+		if diff := cmp.Diff(wantLines, gotLines); diff != "" {
 			t.Errorf("Program output mismatch for '%s' (-want +got):\n%s", tst.fname, diff)
 		}
 	}

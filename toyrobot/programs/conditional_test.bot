@@ -1,4 +1,8 @@
 TRUE IF "hello" . FI
 FALSE IF "nope" . FI
+TRUE if "hello again" . ELSE "nope" . FI
+FALSE IF "this is wrong" . ELSE "print me" . FI
 ### OUTPUT ###
 # hello
+# hello again
+# print me
