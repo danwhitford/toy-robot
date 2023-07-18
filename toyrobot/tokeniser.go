@@ -141,10 +141,10 @@ func (t *RobotTokeniser) getTokenString() (Token, error) {
 		}
 		currentRune := curr
 		if currentRune == '"' {
-			break
+			return Token{TOKEN_STRING, lexeme, fmt.Sprintf("\"%s\"", lexeme)}, nil
 		} else {
 			lexeme += string(currentRune)
 		}
 	}
-	return Token{TOKEN_STRING, lexeme, fmt.Sprintf("\"%s\"", lexeme)}, nil
+	return Token{}, fmt.Errorf("unterminated string")
 }

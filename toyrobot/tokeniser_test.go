@@ -100,3 +100,24 @@ func TestTokenise(t *testing.T) {
 		}
 	}
 }
+
+func TestTokenise_Errors(t *testing.T) {
+	table := []struct {
+		input         string
+		expectedError string
+	}{
+		{"10 10 EQ IF \"equal\" . ELSE \"not equal\" . \" FI", "unterminated string"},
+	}
+
+	for _, tst := range table {
+		tokeniser := RobotTokeniser{}
+		_, err := tokeniser.Tokenise(tst.input)
+		if err == nil {
+			t.Fatalf("Expected error tokenising '%s'", tst.input)
+		}
+
+		if err.Error() != tst.expectedError {
+			t.Errorf("Expected error '%s' tokenising '%s'", tst.expectedError, tst.input)
+		}
+	}
+}
