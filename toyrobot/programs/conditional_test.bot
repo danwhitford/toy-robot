@@ -1,7 +1,7 @@
-TRUE IF "hello" . FI
-FALSE IF "nope" . FI
-TRUE if "hello again" . ELSE "nope" . FI
-FALSE IF "this is wrong" . ELSE "print me" . FI
+TRUE IF "hello" . THEN
+FALSE IF "nope" . THEN
+TRUE if "hello again" . ELSE "nope" . THEN
+FALSE IF "this is wrong" . ELSE "print me" . THEN
 ### OUTPUT ###
 # hello
 # hello again

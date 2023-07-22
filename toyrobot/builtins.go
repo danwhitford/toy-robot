@@ -35,12 +35,12 @@ func (r *Robot) LoadEnv() {
 	r.Dictionary["MOD"] = r.mod
 
 	// Comparison stuff
-	r.Dictionary["EQ"] = r.eq
-	r.Dictionary["LT"] = r.lt
-	r.Dictionary["GT"] = r.gt
-	r.Dictionary["LTE"] = r.lte
-	r.Dictionary["GTE"] = r.gte
-	r.Dictionary["NEQ"] = r.neq
+	r.Dictionary["="] = r.eq
+	r.Dictionary["<"] = r.lt
+	r.Dictionary[">"] = r.gt
+	r.Dictionary["<="] = r.lte
+	r.Dictionary[">="] = r.gte
+	r.Dictionary["<>"] = r.neq
 
 	// Conditional stuff
 	r.Dictionary["IF"] = r.ifStatement

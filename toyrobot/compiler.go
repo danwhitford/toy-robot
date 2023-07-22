@@ -59,12 +59,12 @@ func (r *RobotCompiler) Compile(input []Token) ([]byte, error) {
 				instructions = append(
 					instructions,
 					byte(OP_EXEC_WORD),
-					'I', 'F', 0, 0, // placeholder for FI location
+					'I', 'F', 0, 0, // placeholder for THEN location
 				)
 				r.ifStack.Push(IfFrame{
 					Location: len(instructions),
 				})
-			case "FI":
+			case "THEN":
 				ifFrame, err := r.ifStack.Pop()
 				if err != nil {
 					return nil, err

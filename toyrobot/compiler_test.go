@@ -66,7 +66,7 @@ func TestCompile(t *testing.T) {
 				{TOKEN_WORD, "IF", "IF"},
 				{TOKEN_STRING, "hello", "\"hello\""},
 				{TOKEN_WORD, ".", "."},
-				{TOKEN_WORD, "FI", "FI"},
+				{TOKEN_WORD, "THEN", "THEN"},
 			},
 			want: []byte{
 				byte(OP_PUSH_VAL),
@@ -101,8 +101,8 @@ func TestCompile(t *testing.T) {
 				{TOKEN_WORD, "ELSE", "ELSE"},
 				{TOKEN_STRING, "SMALLUN", "\"SMALLUN\""},
 				{TOKEN_WORD, ".", "."},
-				{TOKEN_WORD, "FI", "FI"},
-				{TOKEN_WORD, "FI", "FI"},
+				{TOKEN_WORD, "THEN", "THEN"},
+				{TOKEN_WORD, "THEN", "THEN"},
 				{TOKEN_WORD, "DROP", "DROP"},
 			},
 			want: []byte{
